@@ -13,13 +13,14 @@ class DebugPrintLists
         List<Item> items = DialogueManager.instance.masterDatabase.items;
         foreach (Item item in items)
         {
-            if (bOnlyTreasure && DialogueManager.MasterDatabase.GetSlot(item, "TreasureSlot") == null)
+            Item slot = DialogueManager.MasterDatabase.GetSlot(item, "TreasureSlot");
+            if (bOnlyTreasure && slot == null)
             {
                 if (item.IsFieldAssigned("TreasureMoney"))
                     Plugin.Logger.LogInfo($"Money Item: {item.Name}");
                 continue;
             }
-            Plugin.Logger.LogInfo($"Item: {item.Name}");
+            Plugin.Logger.LogInfo($"Item: {item.Name} at slot {slot.Name}");
         }
     }
 }

@@ -6,6 +6,7 @@ using UnityEngine;
 
 
 namespace DeathbulgeArchipelagoClient;
+
 class DialogueTrigger_Patch
 {
     [HarmonyPatch(typeof(DialogueSystemTrigger))]
@@ -13,7 +14,7 @@ class DialogueTrigger_Patch
     [HarmonyPrefix]
     static void Prefix_ConvStart(Transform actor)
     {
-        if(actor)
+        if (actor)
             Plugin.Logger.LogInfo($"Conversation starts on {actor.gameObject}");
     }
 
@@ -22,7 +23,7 @@ class DialogueTrigger_Patch
     [HarmonyPrefix]
     static void Prefix_Fire(Transform actor)
     {
-        if(actor)
+        if (actor)
             Plugin.Logger.LogInfo($"Fire event on {actor.gameObject}");
     }
 
@@ -31,7 +32,7 @@ class DialogueTrigger_Patch
     [HarmonyPrefix]
     static void Prefix_Use_Transform(Transform actor)
     {
-        if(actor)
+        if (actor)
             Plugin.Logger.LogInfo($"On use on {actor.gameObject}");
     }
 
@@ -50,11 +51,11 @@ class DialogueTrigger_Patch
     static void Prefix_StartConversation(string title, int initialDialogueEntryID, List<Transform> objectRefs, Transform self)
     {
         Plugin.Logger.LogInfo($"----> Dialogue {title}; Number {initialDialogueEntryID}; Launched by {self}, With ref List:");
-        foreach(Transform curr_object in objectRefs)
+        foreach (Transform curr_object in objectRefs)
         {
             Plugin.Logger.LogInfo($"      {curr_object}");
         }
-        Conversation conversation =  DialogueManager.instance.masterDatabase.GetConversation(title);
+        Conversation conversation = DialogueManager.instance.masterDatabase.GetConversation(title);
         PrintDialogueConveration(conversation);
     }
 
@@ -66,18 +67,18 @@ class DialogueTrigger_Patch
 
             foreach (var entry in conversation.dialogueEntries)
             {
-                if(entry.Sequence.ToString() == "Continue()")
+                if (entry.Sequence.ToString() == "Continue()")
                 {
                     Plugin.Logger.LogInfo($"Entry {entry.id} -> Empty");
                 }
                 else
                 {
                     Plugin.Logger.LogInfo($"Entry {entry.id}: ");
-                    if(entry.DialogueText != "")
+                    if (entry.DialogueText != "")
                         Plugin.Logger.LogInfo($"Text: {entry.DialogueText}");
-                    if(entry.Sequence != "")
-                    Plugin.Logger.LogInfo($"Sequence: {entry.Sequence}");
-                    if(entry.userScript != "")
+                    if (entry.Sequence != "")
+                        Plugin.Logger.LogInfo($"Sequence: {entry.Sequence}");
+                    if (entry.userScript != "")
                         Plugin.Logger.LogInfo($"Lua: {entry.userScript}\n");
                 }
             }
@@ -92,7 +93,7 @@ class DialogueTrigger_Patch
     {
         DebugPrintLists.PrintAllItems(true);
 
-        if(variable == "Treasure.CurrentFlag")
+        if (variable == "Treasure.CurrentFlag")
         {
             string randomTreasure = Items.GetRandomItemName();
             Plugin.Logger.LogInfo($"======= The treasure get will should be {LuaInterpreterExtensions.ObjectToLuaValue(value)} but it will be {randomTreasure}");

@@ -22,14 +22,14 @@ public class Plugin : BaseUnityPlugin
         logSceneLoadedConfig = Config.Bind("Debug.Logging", "LogScenesLoaded", true, "For developpement purposes");
         logDialogueConfig = Config.Bind("Debug.Logging", "LogDialogue", true, "For developpement purposes");
 
-        if(logSceneLoadedConfig.Value)
+        if (logSceneLoadedConfig.Value)
         {
             SceneManager.sceneLoaded += SceneManagerLogger.OnSceneLoaded;
             SceneManager.sceneUnloaded += SceneManagerLogger.OnSceneUnloaded;
             SceneManager.activeSceneChanged += SceneManagerLogger.OnActiveSceneChanged;
         }
 
-        if(logDialogueConfig.Value)
+        if (logDialogueConfig.Value)
             Harmony.CreateAndPatchAll(typeof(DialogueTrigger_Patch));
 
         Logger.LogInfo($"Plugin {MyPluginInfo.PLUGIN_GUID} has finished patching!");

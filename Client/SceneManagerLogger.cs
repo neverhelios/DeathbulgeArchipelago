@@ -13,7 +13,7 @@ class SceneManagerLogger
         Plugin.Logger.LogInfo($"Scene loaded: {scene.name} {mode}");
         Plugin.Logger.LogInfo($"Scene active: {SceneManager.GetActiveScene().name}\n\n");
 
-        foreach(GameObject rootObj in scene.GetRootGameObjects())
+        foreach (GameObject rootObj in scene.GetRootGameObjects())
         {
             Plugin.Logger.LogInfo(rootObj + "\n\n");
             PrintChildrensRecursive(rootObj.transform, "+", false);
@@ -33,7 +33,7 @@ class SceneManagerLogger
 
     private static void PrintChildrensRecursive(Transform transform, string prefix, bool bPrintComponent)
     {
-        if(bPrintComponent)
+        if (bPrintComponent)
         {
             GameObject curr_object = transform.gameObject;
             for (int i = 0; i < curr_object.GetComponentCount(); i++)
@@ -46,7 +46,7 @@ class SceneManagerLogger
         for (int i = 0; i < transform.childCount; i++)
         {
             Transform currChild = transform.GetChild(i);
-            if(currChild.gameObject.activeSelf)
+            if (currChild.gameObject.activeSelf)
             {
                 Plugin.Logger.LogInfo($"{prefix} Child[{i}]: {currChild.gameObject}");
                 PrintChildrensRecursive(currChild, $"{prefix}+", bPrintComponent);
