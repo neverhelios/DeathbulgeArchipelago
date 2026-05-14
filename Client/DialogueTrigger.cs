@@ -1,5 +1,7 @@
 using HarmonyLib;
+using Language.Lua;
 using PixelCrushers.DialogueSystem;
+using System.Collections.Generic;
 using UnityEngine;
 
 
@@ -42,12 +44,68 @@ class DialogueTrigger_Patch
     }
 
 
-    [HarmonyPatch(typeof(DialogueSystemController))]
-    [HarmonyPatch("StartConversation", [typeof(string), typeof(int)])]
+    [HarmonyPatch(typeof(DialogueManager))]
+    [HarmonyPatch("StartConversation", [typeof(string), typeof(int), typeof(List<Transform>), typeof(Transform)])]
     [HarmonyPrefix]
-    static void Prefix_StartConversation(string title, int initialDialogueEntryID)
+    static void Prefix_StartConversation(string title, int initialDialogueEntryID, List<Transform> objectRefs, Transform self)
     {
-        Plugin.Logger.LogInfo($"----> Dialogue {title}; Number {initialDialogueEntryID}");
+        Plugin.Logger.LogInfo($"----> Dialogue {title}; Number {initialDialogueEntryID}; Launched by {self}, With ref List:");
+        foreach(Transform curr_object in objectRefs)
+        {
+            Plugin.Logger.LogInfo($"      {curr_object}");
+        }
+        Conversation conversation =  DialogueManager.instance.masterDatabase.GetConversation(title);
+        PrintDialogueConveration(conversation);
+    }
+
+    static void PrintDialogueConveration(Conversation conversation)
+    {
+        if (conversation != null)
+        {
+            Plugin.Logger.LogInfo($"Conversation: {conversation.Title}");
+
+            foreach (var entry in conversation.dialogueEntries)
+            {
+                if(entry.Sequence.ToString() == "Continue()")
+                {
+                    Plugin.Logger.LogInfo($"Entry {entry.id} -> Empty");
+                }
+                else
+                {
+                    Plugin.Logger.LogInfo($"Entry {entry.id}: ");
+                    if(entry.DialogueText != "")
+                        Plugin.Logger.LogInfo($"Text: {entry.DialogueText}");
+                    if(entry.Sequence != "")
+                    Plugin.Logger.LogInfo($"Sequence: {entry.Sequence}");
+                    if(entry.userScript != "")
+                        Plugin.Logger.LogInfo($"Lua: {entry.userScript}\n");
+                }
+            }
+        }
+    }
+
+
+    [HarmonyPatch(typeof(DialogueLua))]
+    [HarmonyPatch("SetVariable", [typeof(string), typeof(object)])]
+    [HarmonyPrefix]
+    static bool Prefix_DialogueLua_SetVariable(string variable, object value)
+    {
+        DebugPrintLists.PrintAllItems(true);
+
+        if(variable == "Treasure.CurrentFlag")
+        {
+            string randomTreasure = Items.GetRandomItemName();
+            Plugin.Logger.LogInfo($"======= The treasure get will should be {LuaInterpreterExtensions.ObjectToLuaValue(value)} but it will be {randomTreasure}");
+            Lua.WasInvoked = true;
+            LuaTable luaTable = Lua.Environment.GetValue("Variable") as LuaTable;
+            if (luaTable == null)
+            {
+                return false;
+            }
+            luaTable.SetNameValue(DialogueLua.StringToTableIndex(variable), new LuaString(randomTreasure));
+            return false;
+        }
+        return true;
     }
 
 }

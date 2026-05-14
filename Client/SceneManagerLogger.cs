@@ -46,8 +46,11 @@ class SceneManagerLogger
         for (int i = 0; i < transform.childCount; i++)
         {
             Transform currChild = transform.GetChild(i);
-            Plugin.Logger.LogInfo($"{prefix} Child[{i}]: {currChild.gameObject}");
-            PrintChildrensRecursive(currChild, $"{prefix}+", bPrintComponent);
+            if(currChild.gameObject.activeSelf)
+            {
+                Plugin.Logger.LogInfo($"{prefix} Child[{i}]: {currChild.gameObject}");
+                PrintChildrensRecursive(currChild, $"{prefix}+", bPrintComponent);
+            }
         }
     }
 }

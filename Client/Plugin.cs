@@ -11,6 +11,7 @@ public class Plugin : BaseUnityPlugin
 {
     internal static new ManualLogSource Logger;
     private static ConfigEntry<bool> logSceneLoadedConfig;
+    private static ConfigEntry<bool> logDialogueConfig;
 
     private void Awake()
     {
@@ -19,6 +20,7 @@ public class Plugin : BaseUnityPlugin
         Logger.LogInfo($"Plugin {MyPluginInfo.PLUGIN_GUID} is loaded!");
 
         logSceneLoadedConfig = Config.Bind("Debug.Logging", "LogScenesLoaded", true, "For developpement purposes");
+        logDialogueConfig = Config.Bind("Debug.Logging", "LogDialogue", true, "For developpement purposes");
 
         if(logSceneLoadedConfig.Value)
         {
@@ -27,9 +29,9 @@ public class Plugin : BaseUnityPlugin
             SceneManager.activeSceneChanged += SceneManagerLogger.OnActiveSceneChanged;
         }
 
-        Harmony.CreateAndPatchAll(typeof(DialogueTrigger_Patch));
+        if(logDialogueConfig.Value)
+            Harmony.CreateAndPatchAll(typeof(DialogueTrigger_Patch));
 
         Logger.LogInfo($"Plugin {MyPluginInfo.PLUGIN_GUID} has finished patching!");
-
     }
 }
