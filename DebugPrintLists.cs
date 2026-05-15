@@ -18,9 +18,11 @@ class DebugPrintLists
             {
                 if (item.IsFieldAssigned("TreasureMoney"))
                     Plugin.Logger.LogInfo($"Money Item: {item.Name}");
+                // Plugin.Logger.LogInfo($"LocationItem(\"{item.Name}\", \"Treasure Money({item.LookupInt("TreasureMoney")})\")");
                 continue;
             }
             Plugin.Logger.LogInfo($"Item: {item.Name} at slot {slot.Name}");
+            // Plugin.Logger.LogInfo($"LocationItem(\"{item.Name}\", \"{slot.Name}\")");
         }
     }
 }

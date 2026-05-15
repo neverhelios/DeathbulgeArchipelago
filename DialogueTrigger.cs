@@ -95,7 +95,7 @@ class DialogueTrigger_Patch
 
         if (variable == "Treasure.CurrentFlag")
         {
-            string randomTreasure = Items.GetRandomItemName();
+            string randomTreasure = Items.GetRandomTreasureLocation();
             Plugin.Logger.LogInfo($"======= The treasure get will should be {LuaInterpreterExtensions.ObjectToLuaValue(value)} but it will be {randomTreasure}");
             Lua.WasInvoked = true;
             LuaTable luaTable = Lua.Environment.GetValue("Variable") as LuaTable;
