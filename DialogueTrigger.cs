@@ -91,10 +91,11 @@ class DialogueTrigger_Patch
     [HarmonyPrefix]
     static bool Prefix_DialogueLua_SetVariable(string variable, object value)
     {
-        DebugPrintLists.PrintAllItems(true);
+        // DebugPrintLists.PrintAllItems(true);
 
         if (variable == "Treasure.CurrentFlag")
         {
+            ArchipelagoManager.instance.currSession?.Locations?.CompleteLocationChecks(ArchipelagoManager.instance.currSession?.Locations?.GetLocationIdFromName("Deathbulge", LuaInterpreterExtensions.ObjectToLuaValue(value).ToString()) ?? -1);
             string randomTreasure = Items.GetRandomTreasureLocation();
             Plugin.Logger.LogInfo($"======= The treasure get will should be {LuaInterpreterExtensions.ObjectToLuaValue(value)} but it will be {randomTreasure}");
             Lua.WasInvoked = true;

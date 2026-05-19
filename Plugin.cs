@@ -22,6 +22,12 @@ public class Plugin : BaseUnityPlugin
         logSceneLoadedConfig = Config.Bind("Debug.Logging", "LogScenesLoaded", true, "For developpement purposes");
         logDialogueConfig = Config.Bind("Debug.Logging", "LogDialogue", true, "For developpement purposes");
 
+        this.gameObject.AddComponent<ArchipelagoManager>();
+        ArchipelagoManager.instance = gameObject.GetComponent<ArchipelagoManager>();
+
+        ArchipelagoManager.instance.CreateSession("localhost", "DeathbulgeTest");
+
+
         if (logSceneLoadedConfig.Value)
         {
             SceneManager.sceneLoaded += SceneManagerLogger.OnSceneLoaded;

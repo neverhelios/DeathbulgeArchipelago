@@ -1,27 +1,29 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>netstandard2.1</TargetFramework>
-    <AssemblyName>DeathbulgeArchipelagoClient</AssemblyName>
-    <Product>Deathbulge Archipelago Client plugin</Product>
-    <Version>1.0.0</Version>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <LangVersion>latest</LangVersion>
-    <RestoreAdditionalProjectSources>
-      https://api.nuget.org/v3/index.json;
-      https://nuget.bepinex.dev/v3/index.json;
-      https://nuget.samboy.dev/v3/index.json
-    </RestoreAdditionalProjectSources>
-    <RootNamespace>DeathbulgeArchipelagoClient</RootNamespace>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>netstandard2.1</TargetFramework>
+		<AssemblyName>DeathbulgeArchipelagoClient</AssemblyName>
+		<Product>Deathbulge Archipelago Client plugin</Product>
+		<Version>1.0.0</Version>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+		<LangVersion>latest</LangVersion>
+		<RestoreAdditionalProjectSources>
+			https://api.nuget.org/v3/index.json;
+			https://nuget.bepinex.dev/v3/index.json;
+			https://nuget.samboy.dev/v3/index.json
+		</RestoreAdditionalProjectSources>
+		<RootNamespace>DeathbulgeArchipelagoClient</RootNamespace>
+		<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="BepInEx.Analyzers" Version="1.*" PrivateAssets="all" />
-    <PackageReference Include="BepInEx.Core" Version="5.*" />
-    <PackageReference Include="BepInEx.PluginInfoProps" Version="2.*" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Archipelago.MultiClient.Net" Version="6.7.1" />
+		<PackageReference Include="BepInEx.Analyzers" Version="1.*" PrivateAssets="all" />
+		<PackageReference Include="BepInEx.Core" Version="5.*" />
+		<PackageReference Include="BepInEx.PluginInfoProps" Version="2.*" />
+	</ItemGroup>
 
-  <ItemGroup>
+	<ItemGroup>
 		<Reference Include="Animancer">
 			<HintPath>$(GamePath)/deathbulge_Data\Managed\Animancer.dll</HintPath>
 		</Reference>
@@ -355,16 +357,23 @@
 		<Reference Include="UnityUIExtensions">
 			<HintPath>$(GamePath)/deathbulge_Data\Managed\UnityUIExtensions.dll</HintPath>
 		</Reference>
-  </ItemGroup>
+	</ItemGroup>
 
-  <ItemGroup>
+	<ItemGroup>
 		<Content Include="Directory.Build.props" />
 	</ItemGroup>
 
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+	<Target Name="CopyArchipelagoToGame" AfterTargets="Build">
+	<Copy 
+		SourceFiles="@(ReferenceCopyLocalPaths)"
+		DestinationFolder="$(GamePath)\BepInEx\plugins\DeathbulgeArchipelagoClient"
+		Condition="'%(ReferenceCopyLocalPaths.Filename)' == 'Archipelago.MultiClient.Net'" />
+	</Target>
+
+	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
 		<Exec Command="COPY &quot;$(TargetPath)&quot; &quot;$(GamePath)\BepInEx\plugins\DeathbulgeArchipelagoClient&quot;" />
 	</Target>
-  <ItemGroup Condition="'$(TargetFramework.TrimEnd(`0123456789`))' == 'net'">
-    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.2" PrivateAssets="all" />
-  </ItemGroup>
+	<ItemGroup Condition="'$(TargetFramework.TrimEnd(`0123456789`))' == 'net'">
+		<PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.2" PrivateAssets="all" />
+	</ItemGroup>
 </Project>
