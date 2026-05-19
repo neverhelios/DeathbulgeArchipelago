@@ -32,6 +32,8 @@ public class Plugin : BaseUnityPlugin
         if (logDialogueConfig.Value)
             Harmony.CreateAndPatchAll(typeof(DialogueTrigger_Patch));
 
+        // StartCoroutine(DumpDatabaseWhenReady());
+
         Logger.LogInfo($"Plugin {MyPluginInfo.PLUGIN_GUID} has finished patching!");
     }
 }
