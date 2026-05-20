@@ -1,6 +1,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 class LocatedItem
 {
@@ -18,170 +19,177 @@ class Items
 {
     private static Random _random = new Random();
 
-    public static LocatedItem GetRandomItem()
+    public static KeyValuePair<string, string> GetRandomItem()
     {
-        int countMoneyItems = itemMoneyNames?.Count ?? 0;
-        int countTreasure = itemTreasureNames?.Count ?? 0;
+        int countMoneyItems = moneyToTreasureNames?.Count ?? 0;
+        int countTreasure = itemToTreasureNames?.Count ?? 0;
 
         int total = countMoneyItems + countTreasure;
         int index = _random.Next(total);
 
         if (index < countMoneyItems)
-            return itemMoneyNames[index];
+            return moneyToTreasureNames.ElementAt(index);
 
-        return itemTreasureNames[index - countMoneyItems];
+        return itemToTreasureNames.ElementAt(index - countMoneyItems);
     }
 
     public static string GetRandomItemName()
     {
-        return GetRandomItem().itemName;
+        return GetRandomItem().Key;
     }
 
     public static string GetRandomTreasureLocation()
     {
-        return GetRandomItem().treasureLocationName;
+        return GetRandomItem().Value;
     }
 
 
-    public static List<LocatedItem> GetItemTreasureNameList()
+    public static Dictionary<string, string> GetItemTreasureNameDict()
     {
-        return itemTreasureNames;
+        return itemToTreasureNames;
     }
 
-    static List<LocatedItem> itemTreasureNames = new List<LocatedItem> {
-        new LocatedItem("Tonewood01Treasure01", "[Stock] Increase 1 (Tonewood01Treasure01)"),
-        new LocatedItem("Tonewood02Treasure01", "[Patch] God Brain"),
-        new LocatedItem("Tonewood03Treasure01", "[Merch] Emergency Horn"),
-        new LocatedItem("Tonewood03Treasure02", "[Merch] Clearbuds"),
-        new LocatedItem("Tonewood04Treasure01", "[Patch] HELF"),
-        new LocatedItem("Tonewood06Treasure01", "[Patch] Fat Punch Five"),
-        new LocatedItem("Tonewood08Treasure01", "[Key Merch] Shiny Spiky Thing"),
-        new LocatedItem("[Treasure] TonewoodGig02-Shrubbanshee", "[Beat] Bansheebash"),
-        new LocatedItem("Tonewood04Treasure02", "[Mod] Beefcake Bassquake"),
-        new LocatedItem("Tonewood06Treasure02", "[Stock] Increase 1 (Tonewood06Treasure02)"),
-        new LocatedItem("Tonewood08Treasure02", "[Key Merch] Your Inner Boot"),
-        new LocatedItem("Tonewood08Treasure03", "[Mod] Crowdsurf"),
-        new LocatedItem("[Treasure] PrizeTicketJim", "[Key Merch] Old Prize Draw Ticket 10"),
-        new LocatedItem("[Treasure] GillianFork", "[Key Merch] Shiny Spiky Thing (Fork)"),
-        new LocatedItem("Claire02Treasure01", "[Mod] Reckless Shredding"),
-        new LocatedItem("Claire06Treasure01", "[Stock] Increase 1 (Claire06Treasure01)"),
-        new LocatedItem("Claire04Treasure01", "[Patch] Beauty in Suffering"),
-        new LocatedItem("Claire04Treasure02", "[Mod] Heartwarmer"),
-        new LocatedItem("Claire07Treasure01", "[Mod] Intimidate"),
-        new LocatedItem("[Treasure] ClaireGig03-Madam", "[Beat] Absolute Belter"),
-        new LocatedItem("ClaireLower01Treasure01", "[Patch] Luminous Kid"),
-        new LocatedItem("Claire07Treasure02", "[Stock] Increase 1 (Claire07Treasure02)"),
-        new LocatedItem("Claire05Treasure01", "[Stock] Increase 1 (Claire05Treasure01)"),
-        new LocatedItem("ClaireLower02Treasure01", "[Stock] Increase 1 (ClaireLower02Treasure01)"),
-        new LocatedItem("ClaireLower03Treasure02", "[Mod] The Great Unjoying"),
-        new LocatedItem("ClaireLower04Treasure01", "[Stock] Increase 1 (ClaireLower04Treasure01)"),
-        new LocatedItem("ClaireLower03Treasure01", "[Mod] Fresh Twist"),
-        new LocatedItem("ClaireLower03Treasure03", "[Mod] Everybody Broken Bones"),
-        new LocatedItem("ClaireLower04Treasure02", "[Merch] Flipped Cap"),
-        new LocatedItem("[Treasure] PrizeTicketMadam", "[Key Merch] Old Prize Draw Ticket 4"),
-        new LocatedItem("[Treasure] MODPODClass", "[Key Merch] Class Changer"),
-        new LocatedItem("[Treasure] PartyHouseReward", "[Patch] Jen & The Regens"),
-        new LocatedItem("[Treasure] GeorgeousReward", "[Patch] DJ Beatseek"),
-        new LocatedItem("[Treasure] NelReward", "[Patch] Barry Club"),
-        new LocatedItem("Bopstead01Treasure01", "[Patch] Mega Def"),
-        new LocatedItem("[Treasure] FoggyRewardPatch", "[Mod] Erasure"),
-        new LocatedItem("[Treasure] DaemoPatch", "[Patch] BotB Patch"),
-        new LocatedItem("Bopstead03Treasure01", "[Mod] GONG"),
-        new LocatedItem("Bopstead04Treasure01", "[Key Merch] Barry's Tea Party"),
-        new LocatedItem("[Treasure] PrizeTicketBarry", "[Key Merch] Old Prize Draw Ticket 3"),
-        new LocatedItem("[Treasure] PrizeTicketBrioche", "[Key Merch] Old Prize Draw Ticket 2"),
-        new LocatedItem("[Treasure] PrizeTicketPlat", "[Key Merch] Old Prize Draw Ticket 1"),
-        new LocatedItem("[Treasure] BasementGig02-Whale", "[Mod] Zero Hertz"),
-        new LocatedItem("[Treasure] BasementGig04-Shutup", "[Merch] Silenceblaster"),
-        new LocatedItem("Basement03Treasure01", "[Stock] Increase 1 (Basement03Treasure01)"),
-        new LocatedItem("Basement06Treasure01", "[Mod] Beefy Double"),
-        new LocatedItem("[Treasure] BasementGig05-Cuttle", "[Beat] Cuttlebuddy"),
-        new LocatedItem("[Treasure] BasementGig01-Cuttlebro", "[Patch] Chuckridge Cuttlebrander"),
-        new LocatedItem("Basement06Treasure02", "[Stock] Increase 1 (Basement06Treasure02)"),
-        new LocatedItem("Basement06Treasure03", "[Merch] The Y'almighty"),
-        new LocatedItem("Basement04Treasure01", "[Mod] Heart Kickstart"),
-        new LocatedItem("Basement03Treasure02", "[Stock] Increase 1 (Basement03Treasure02)"),
-        new LocatedItem("Basement03Treasure03", "[Mod] Crashy Crescendo"),
-        new LocatedItem("Basement05Treasure01", "[Mod] Bloody Hell"),
-        new LocatedItem("Basement02Treasure01", "[Stock] Increase 1 (Basement02Treasure01)"),
-        new LocatedItem("Whale25Treasure", "[Mod] Whale Music"),
-        new LocatedItem("Basement02Treasure02", "[Patch] The NOW NOW NOWs"),
-        new LocatedItem("[Treasure] PrizeTicketBase", "[Key Merch] Old Prize Draw Ticket 5"),
-        new LocatedItem("TheBus02Treasure01", "[Mod] Upbeat"),
-        new LocatedItem("TheBus05Treasure01", "[Mod] Dazzling Shred"),
-        new LocatedItem("TheBus05Treasure02", "[Stock] Increase 1 (TheBus05Treasure02)"),
-        new LocatedItem("TheBus08Treasure02", "[Stock] Increase 1 (TheBus08Treasure02)"),
-        new LocatedItem("TheBus08Treasure01", "[Patch] WELF"),
-        new LocatedItem("TheBus09Treasure01", "[Mod] Let Me Try Something"),
-        new LocatedItem("TheBus10Treasure01", "[Mod] Big Angry Riff of Fury"),
-        new LocatedItem("TheBus10Treasure02", "[Key Merch] 16th Deck Keycard"),
-        new LocatedItem("TheBus11Treasure01", "[Patch] Purple Lightning"),
-        new LocatedItem("[Treasure] TheBusGig02-Weaver", "[Mod] Weaver of Darkness"),
-        new LocatedItem("[Treasure] TheBusGig01-Glamourella", "[Beat] Starstrike"),
-        new LocatedItem("TheBus10Treasure03", "[Mod] Surging Sorrow"),
-        new LocatedItem("TheBus08Treasure03", "[Stock] Increase 1 (TheBus08Treasure03)"),
-        new LocatedItem("TheBus05Treasure03", "[Mod] Shred of the Dead"),
-        new LocatedItem("[Treasure] PrizeTicketBus", "[Key Merch] Old Prize Draw Ticket 6"),
-        new LocatedItem("[Treasure] 13DeckKeycard", "[Key Merch] 13th Deck Keycard"),
-        new LocatedItem("[Treasure] 14DeckKeycard", "[Key Merch] 14th Deck Keycard"),
-        new LocatedItem("Lab03Treasure01", "[Merch] Diva Music Box"),
-        new LocatedItem("Lab04Treasure01", "[Patch] U WANT SUM"),
-        new LocatedItem("Lab07Treasure01", "[Mod] Good Vibe Preservation"),
-        new LocatedItem("Lab08Treasure01", "[Mod] Power Slide"),
-        new LocatedItem("[Treasure] LabGig02-WIP", "[Beat] Makeshift Beat"),
-        new LocatedItem("Lab01Treasure01", "[Stock] Increase 1 (Lab01Treasure01)"),
-        new LocatedItem("Lab04Treasure02", "[Stock] Increase 1 (Lab04Treasure02)"),
-        new LocatedItem("Lab07Treasure02", "[Stock] Increase 1 (Lab07Treasure02)"),
-        new LocatedItem("Lab09Treasure01", "[Mod] Osculate in 7/8"),
-        new LocatedItem("Lab10Treasure01", "[Mod] Robin Hunk Special"),
-        new LocatedItem("Lab12Treasure01", "[Mod] Pyrotechnics"),
-        new LocatedItem("[Treasure] PrizeTicketLab", "[Key Merch] Old Prize Draw Ticket 8"),
-        new LocatedItem("Lab10Treasure02", "[Mod] ugh"),
-        new LocatedItem("[Treasure] GlamReader", "[Key Merch] Glam Reader"),
-        new LocatedItem("Hoho02Treasure01", "[Beat] Rinna"),
-        new LocatedItem("Hoho02Treasure02", "[Beat] RH"),
-        new LocatedItem("Hoho02Treasure03", "[Mod] REMIX Briff"),
-        new LocatedItem("Hoho02Treasure04", "[Patch] THREE BEAT MIX PATCH"),
-        new LocatedItem("Hoho01Treasure01", "[Merch] Audio Greeting Card"),
-        new LocatedItem("Hoho02Treasure05", "[Mod] Beam Team"),
-        new LocatedItem("Hoho01Treasure02", "[Mod] Axe of Righteousness"),
-        new LocatedItem("[Treasure] PrizeTicketHoho", "[Key Merch] Old Prize Draw Ticket 7"),
-        new LocatedItem("Hoho02Treasure06", "[Patch] Recently Hatched"),
-        new LocatedItem("Pokalyps01Treasure01", "[Stock] Increase 1 (Pokalyps01Treasure01)"),
-        new LocatedItem("Pokalyps02Treasure01", "[Mod] Hypercussion"),
-        new LocatedItem("Pokalyps02Treasure02", "[Mod] ALT_FX"),
-        new LocatedItem("Pokalyps04Treasure01", "[Mod] Palm Destroyer"),
-        new LocatedItem("Pokalyps05Treasure01", "[Merch] SIDD X-TR3M3"),
-        new LocatedItem("Pokalyps06Treasure01", "[Mod] Colossal Cuss Out"),
-        new LocatedItem("Pokalyps07Treasure01", "[Stock] Increase 1 (Pokalyps07Treasure01)"),
-        new LocatedItem("Pokalyps09Treasure01", "[Mod] Vicious Sacrifice"),
-        new LocatedItem("Pokalyps05Treasure02", "[Mod] BOOM.WAV"),
-        new LocatedItem("Pokalyps10Treasure01", "[Mod] The Power of Friendship"),
-        new LocatedItem("Pokalyps01Treasure02", "[Patch] Pokalyps"),
-        new LocatedItem("[Treasure] PrizeTicketPok", "[Key Merch] Old Prize Draw Ticket 9"),
-        new LocatedItem("Dream03Treasure01", "[Mod] Graveyard Shuffle"),
-        new LocatedItem("Dream03Treasure02", "[Mod] Dr. Tonebone"),
-        new LocatedItem("Dream03Treasure03", "[Patch] Savant"),
-        new LocatedItem("Dream05Treasure01", "[Mod] Eruptive Damnation"),
-        new LocatedItem("Dream04Treasure02", "[Mod] Total Reinterpretation"),
-        new LocatedItem("Dream04Treasure01", "[Stock] Increase 1 (Dream04Treasure01)"),
-        new LocatedItem("Dream04Treasure03", "[Stock] Increase 1 (Dream04Treasure03)")
+    public static string GetTreasureFromItemName(string itemName)
+    {
+        return itemToTreasureNames[itemName];
+    }
+
+    static readonly Dictionary<string, string> itemToTreasureNames = new()
+    {
+        {"[Stock] Increase 1 (Tonewood01Treasure01)", "Tonewood01Treasure01"},
+        {"[Patch] God Brain", "Tonewood02Treasure01"},
+        {"[Merch] Emergency Horn", "Tonewood03Treasure01"},
+        {"[Merch] Clearbuds", "Tonewood03Treasure02"},
+        {"[Patch] HELF", "Tonewood04Treasure01"},
+        {"[Patch] Fat Punch Five", "Tonewood06Treasure01"},
+        {"[Key Merch] Shiny Spiky Thing", "Tonewood08Treasure01"},
+        {"[Beat] Bansheebash", "[Treasure] TonewoodGig02-Shrubbanshee"},
+        {"[Mod] Beefcake Bassquake", "Tonewood04Treasure02"},
+        {"[Stock] Increase 1 (Tonewood06Treasure02)", "Tonewood06Treasure02"},
+        {"[Key Merch] Your Inner Boot", "Tonewood08Treasure02"},
+        {"[Mod] Crowdsurf", "Tonewood08Treasure03"},
+        {"[Key Merch] Old Prize Draw Ticket 10", "[Treasure] PrizeTicketJim"},
+        {"[Key Merch] Shiny Spiky Thing (Fork)", "[Treasure] GillianFork"},
+        {"[Mod] Reckless Shredding", "Claire02Treasure01"},
+        {"[Stock] Increase 1 (Claire06Treasure01)", "Claire06Treasure01"},
+        {"[Patch] Beauty in Suffering", "Claire04Treasure01"},
+        {"[Mod] Heartwarmer", "Claire04Treasure02"},
+        {"[Mod] Intimidate", "Claire07Treasure01"},
+        {"[Beat] Absolute Belter", "[Treasure] ClaireGig03-Madam"},
+        {"[Patch] Luminous Kid", "ClaireLower01Treasure01"},
+        {"[Stock] Increase 1 (Claire07Treasure02)", "Claire07Treasure02"},
+        {"[Stock] Increase 1 (Claire05Treasure01)", "Claire05Treasure01"},
+        {"[Stock] Increase 1 (ClaireLower02Treasure01)", "ClaireLower02Treasure01"},
+        {"[Mod] The Great Unjoying", "ClaireLower03Treasure02"},
+        {"[Stock] Increase 1 (ClaireLower04Treasure01)", "ClaireLower04Treasure01"},
+        {"[Mod] Fresh Twist", "ClaireLower03Treasure01"},
+        {"[Mod] Everybody Broken Bones", "ClaireLower03Treasure03"},
+        {"[Merch] Flipped Cap", "ClaireLower04Treasure02"},
+        {"[Key Merch] Old Prize Draw Ticket 4", "[Treasure] PrizeTicketMadam"},
+        {"[Key Merch] Class Changer", "[Treasure] MODPODClass"},
+        {"[Patch] Jen & The Regens", "[Treasure] PartyHouseReward"},
+        {"[Patch] DJ Beatseek", "[Treasure] GeorgeousReward"},
+        {"[Patch] Barry Club", "[Treasure] NelReward"},
+        {"[Patch] Mega Def", "Bopstead01Treasure01"},
+        {"[Mod] Erasure", "[Treasure] FoggyRewardPatch"},
+        {"[Patch] BotB Patch", "[Treasure] DaemoPatch"},
+        {"[Mod] GONG", "Bopstead03Treasure01"},
+        {"[Key Merch] Barry's Tea Party", "Bopstead04Treasure01"},
+        {"[Key Merch] Old Prize Draw Ticket 3", "[Treasure] PrizeTicketBarry"},
+        {"[Key Merch] Old Prize Draw Ticket 2", "[Treasure] PrizeTicketBrioche"},
+        {"[Key Merch] Old Prize Draw Ticket 1", "[Treasure] PrizeTicketPlat"},
+        {"[Mod] Zero Hertz", "[Treasure] BasementGig02-Whale"},
+        {"[Merch] Silenceblaster", "[Treasure] BasementGig04-Shutup"},
+        {"[Stock] Increase 1 (Basement03Treasure01)", "Basement03Treasure01"},
+        {"[Mod] Beefy Double", "Basement06Treasure01"},
+        {"[Beat] Cuttlebuddy", "[Treasure] BasementGig05-Cuttle"},
+        {"[Patch] Chuckridge Cuttlebrander", "[Treasure] BasementGig01-Cuttlebro"},
+        {"[Stock] Increase 1 (Basement06Treasure02)", "Basement06Treasure02"},
+        {"[Merch] The Y'almighty", "Basement06Treasure03"},
+        {"[Mod] Heart Kickstart", "Basement04Treasure01"},
+        {"[Stock] Increase 1 (Basement03Treasure02)", "Basement03Treasure02"},
+        {"[Mod] Crashy Crescendo", "Basement03Treasure03"},
+        {"[Mod] Bloody Hell", "Basement05Treasure01"},
+        {"[Stock] Increase 1 (Basement02Treasure01)", "Basement02Treasure01"},
+        {"[Mod] Whale Music", "Whale25Treasure"},
+        {"[Patch] The NOW NOW NOWs", "Basement02Treasure02"},
+        {"[Key Merch] Old Prize Draw Ticket 5", "[Treasure] PrizeTicketBase"},
+        {"[Mod] Upbeat", "TheBus02Treasure01"},
+        {"[Mod] Dazzling Shred", "TheBus05Treasure01"},
+        {"[Stock] Increase 1 (TheBus05Treasure02)", "TheBus05Treasure02"},
+        {"[Stock] Increase 1 (TheBus08Treasure02)", "TheBus08Treasure02"},
+        {"[Patch] WELF", "TheBus08Treasure01"},
+        {"[Mod] Let Me Try Something", "TheBus09Treasure01"},
+        {"[Mod] Big Angry Riff of Fury", "TheBus10Treasure01"},
+        {"[Key Merch] 16th Deck Keycard", "TheBus10Treasure02"},
+        {"[Patch] Purple Lightning", "TheBus11Treasure01"},
+        {"[Mod] Weaver of Darkness", "[Treasure] TheBusGig02-Weaver"},
+        {"[Beat] Starstrike", "[Treasure] TheBusGig01-Glamourella"},
+        {"[Mod] Surging Sorrow", "TheBus10Treasure03"},
+        {"[Stock] Increase 1 (TheBus08Treasure03)", "TheBus08Treasure03"},
+        {"[Mod] Shred of the Dead", "TheBus05Treasure03"},
+        {"[Key Merch] Old Prize Draw Ticket 6", "[Treasure] PrizeTicketBus"},
+        {"[Key Merch] 13th Deck Keycard", "[Treasure] 13DeckKeycard"},
+        {"[Key Merch] 14th Deck Keycard", "[Treasure] 14DeckKeycard"},
+        {"[Merch] Diva Music Box", "Lab03Treasure01"},
+        {"[Patch] U WANT SUM", "Lab04Treasure01"},
+        {"[Mod] Good Vibe Preservation", "Lab07Treasure01"},
+        {"[Mod] Power Slide", "Lab08Treasure01"},
+        {"[Beat] Makeshift Beat", "[Treasure] LabGig02-WIP"},
+        {"[Stock] Increase 1 (Lab01Treasure01)", "Lab01Treasure01"},
+        {"[Stock] Increase 1 (Lab04Treasure02)", "Lab04Treasure02"},
+        {"[Stock] Increase 1 (Lab07Treasure02)", "Lab07Treasure02"},
+        {"[Mod] Osculate in 7/8", "Lab09Treasure01"},
+        {"[Mod] Robin Hunk Special", "Lab10Treasure01"},
+        {"[Mod] Pyrotechnics", "Lab12Treasure01"},
+        {"[Key Merch] Old Prize Draw Ticket 8", "[Treasure] PrizeTicketLab"},
+        {"[Mod] ugh", "Lab10Treasure02"},
+        {"[Key Merch] Glam Reader", "[Treasure] GlamReader"},
+        {"[Beat] Rinna", "Hoho02Treasure01"},
+        {"[Beat] RH", "Hoho02Treasure02"},
+        {"[Mod] REMIX Briff", "Hoho02Treasure03"},
+        {"[Patch] THREE BEAT MIX PATCH", "Hoho02Treasure04"},
+        {"[Merch] Audio Greeting Card", "Hoho01Treasure01"},
+        {"[Mod] Beam Team", "Hoho02Treasure05"},
+        {"[Mod] Axe of Righteousness", "Hoho01Treasure02"},
+        {"[Key Merch] Old Prize Draw Ticket 7", "[Treasure] PrizeTicketHoho"},
+        {"[Patch] Recently Hatched", "Hoho02Treasure06"},
+        {"[Stock] Increase 1 (Pokalyps01Treasure01)", "Pokalyps01Treasure01"},
+        {"[Mod] Hypercussion", "Pokalyps02Treasure01"},
+        {"[Mod] ALT_FX", "Pokalyps02Treasure02"},
+        {"[Mod] Palm Destroyer", "Pokalyps04Treasure01"},
+        {"[Merch] SIDD X-TR3M3", "Pokalyps05Treasure01"},
+        {"[Mod] Colossal Cuss Out", "Pokalyps06Treasure01"},
+        {"[Stock] Increase 1 (Pokalyps07Treasure01)", "Pokalyps07Treasure01"},
+        {"[Mod] Vicious Sacrifice", "Pokalyps09Treasure01"},
+        {"[Mod] BOOM.WAV", "Pokalyps05Treasure02"},
+        {"[Mod] The Power of Friendship", "Pokalyps10Treasure01"},
+        {"[Patch] Pokalyps", "Pokalyps01Treasure02"},
+        {"[Key Merch] Old Prize Draw Ticket 9", "[Treasure] PrizeTicketPok"},
+        {"[Mod] Graveyard Shuffle", "Dream03Treasure01"},
+        {"[Mod] Dr. Tonebone", "Dream03Treasure02"},
+        {"[Patch] Savant", "Dream03Treasure03"},
+        {"[Mod] Eruptive Damnation", "Dream05Treasure01"},
+        {"[Mod] Total Reinterpretation", "Dream04Treasure02"},
+        {"[Stock] Increase 1 (Dream04Treasure01)", "Dream04Treasure01"},
+        {"[Stock] Increase 1 (Dream04Treasure03)", "Dream04Treasure03"},
     };
 
 
-    static List<LocatedItem> itemMoneyNames = new List<LocatedItem> {
-        new LocatedItem("Tonewood08Treasure04", "Treasure Money(8181)"),
-        new LocatedItem("Claire04Treasure03", "Treasure Money(1000)"),
-        new LocatedItem("Claire04Treasure04", "Treasure Money(2000)"),
-        new LocatedItem("Claire04Treasure05", "Treasure Money(3000)"),
-        new LocatedItem("[Treasure] FoggyRewardMoney", "Treasure Money(5000)"),
-        new LocatedItem("[Treasure] Foggy300", "Treasure Money(300)"),
-        new LocatedItem("Bopstead01Treasure02", "Treasure Money(15000)"),
-        new LocatedItem("Bopstead02Treasure01", "Treasure Money(1111)"),
-        new LocatedItem("Bopstead02Treasure03", "Treasure Money(7777)"),
-        new LocatedItem("Bopstead02Treasure02", "Treasure Money(3333)"),
-        new LocatedItem("Bopstead02Treasure04", "Treasure Money(9999)"),
-        new LocatedItem("Bopstead01Treasure03", "Treasure Money(5)")
+    static readonly Dictionary<string, string> moneyToTreasureNames = new()
+    {
+        {"Treasure Money(8181)", "Tonewood08Treasure04"},
+        { "Treasure Money(1000)", "Claire04Treasure03"},
+        { "Treasure Money(2000)", "Claire04Treasure04"},
+        { "Treasure Money(3000)", "Claire04Treasure05"},
+        { "Treasure Money(5000)", "[Treasure] FoggyRewardMoney"},
+        { "Treasure Money(300)", "[Treasure] Foggy300"},
+        { "Treasure Money(15000)", "Bopstead01Treasure02"},
+        { "Treasure Money(1111)", "Bopstead02Treasure01"},
+        { "Treasure Money(7777)", "Bopstead02Treasure03"},
+        { "Treasure Money(3333)", "Bopstead02Treasure02"},
+        { "Treasure Money(9999)", "Bopstead02Treasure04"},
+        { "Treasure Money(5)", "Bopstead01Treasure03"},
     };
 
 }

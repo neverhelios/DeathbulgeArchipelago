@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace DeathbulgeArchipelagoClient;
 
-class DialogueTrigger_Patch
+class DialogueTriggerLogger_Patch
 {
     [HarmonyPatch(typeof(DialogueSystemTrigger))]
     [HarmonyPatch("OnConversationStart")]
@@ -84,8 +84,10 @@ class DialogueTrigger_Patch
             }
         }
     }
+}
 
-
+class DialogueTrigger_Patch
+{
     [HarmonyPatch(typeof(DialogueLua))]
     [HarmonyPatch("SetVariable", [typeof(string), typeof(object)])]
     [HarmonyPrefix]
@@ -95,16 +97,27 @@ class DialogueTrigger_Patch
 
         if (variable == "Treasure.CurrentFlag")
         {
-            ArchipelagoManager.instance.currSession?.Locations?.CompleteLocationChecks(ArchipelagoManager.instance.currSession?.Locations?.GetLocationIdFromName("Deathbulge", LuaInterpreterExtensions.ObjectToLuaValue(value).ToString()) ?? -1);
-            string randomTreasure = Items.GetRandomTreasureLocation();
-            Plugin.Logger.LogInfo($"======= The treasure get will should be {LuaInterpreterExtensions.ObjectToLuaValue(value)} but it will be {randomTreasure}");
+            string locationString = LuaInterpreterExtensions.ObjectToLuaValue(value).ToString();
+            ArchipelagoManager.instance.currSession?.Locations?.CompleteLocationChecks(ArchipelagoManager.instance.currSession?.Locations?.GetLocationIdFromName("Deathbulge", locationString) ?? -1);
+            string itemName = ArchipelagoManager.instance.GetLocationItem(locationString);
+
             Lua.WasInvoked = true;
             LuaTable luaTable = Lua.Environment.GetValue("Variable") as LuaTable;
             if (luaTable == null)
             {
                 return false;
             }
-            luaTable.SetNameValue(DialogueLua.StringToTableIndex(variable), new LuaString(randomTreasure));
+
+            if (ArchipelagoManager.instance.IsLocalLocation(locationString))
+            {
+                string treasureName = Items.GetTreasureFromItemName(itemName);
+                Plugin.Logger.LogInfo($"======= The treasure get will should be {LuaInterpreterExtensions.ObjectToLuaValue(value)} but it will be {treasureName}");
+                luaTable.SetNameValue(DialogueLua.StringToTableIndex(variable), new LuaString(treasureName));
+            }
+            else
+            {
+                luaTable.SetNameValue(DialogueLua.StringToTableIndex(variable), new LuaString($"Archipelago Item - {itemName}"));
+            }
             return false;
         }
         return true;
