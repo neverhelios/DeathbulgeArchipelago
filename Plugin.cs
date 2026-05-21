@@ -9,6 +9,7 @@ using PixelCrushers.DialogueSystem;
 
 using Field;
 using System.Threading;
+using Core;
 
 namespace DeathbulgeArchipelagoClient;
 
@@ -63,13 +64,36 @@ public class Plugin : BaseUnityPlugin
         {
             while (itemsToDispatch.Count > 0)
             {
-                // TODO: Ask items again if unload field
-                // TODO: Do not show if another is already showing -> Currently it gives everything, it just don't show this to the player
-                // TODO: Detect stocks to avoid duplicates
-                ItemInfo itemReceived = itemsToDispatch.Dequeue();
-                Item item = DialogueManager.MasterDatabase.GetItem(Items.GetTreasureFromItemName(itemReceived.ItemName));
                 TreasureUI treasureUI = CommonObjects.GetTreasureUI();
-                treasureUI.Show(item);
+
+                if (!treasureUI.window.activeInHierarchy)
+                {
+                    ItemInfo itemReceived = itemsToDispatch.Dequeue();
+                    // TODO: Special treatement for external money
+                    Item item = DialogueManager.MasterDatabase.GetItem(Items.GetTreasureFromItemName(itemReceived.ItemName));
+                    Item slot = DialogueManager.MasterDatabase.GetSlot(item, "TreasureSlot");
+                    if (slot != null)
+                    {
+                        if (CoreHelper.HasItem(slot))
+                            Plugin.Logger.LogInfo($"Already have the item {slot.Name}");
+                        else
+                            treasureUI.Show(item);
+                    }
+                    else
+                    {
+                        // TODO: Special treatement for external money
+                        Plugin.Logger.LogInfo($"Argent, argent, argent");
+                        treasureUI.Show(item);
+                    }
+
+                }
+                else
+                {
+                    // Already printing something, we'll show the new item after
+                    break;
+                }
+
+
             }
         }
     }

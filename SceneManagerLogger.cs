@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using HarmonyLib;
 using System.Threading.Tasks;
+using Archipelago.MultiClient.Net.Models;
 
 
 namespace DeathbulgeArchipelagoClient;
@@ -41,7 +42,12 @@ class SceneManagerLogger
     {
         Plugin.Logger.LogInfo($"Scene unloaded: {scene.name}");
         if (scene.name == "Field")
+        {
             bIsFieldLoaded = false;
+
+            foreach (ItemInfo itemInfo in ArchipelagoManager.instance.currSession?.Items?.AllItemsReceived)
+                Plugin.AddDispatchedItem(itemInfo);
+        }
     }
 
     public static void OnActiveSceneChanged(Scene sceneStart, Scene sceneFinished)
