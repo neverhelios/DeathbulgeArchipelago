@@ -26,11 +26,12 @@ class ArchipelagoManager : MonoBehaviour
         public string itemName { get; set; }
         public long itemId { get; set; }
         public long player { get; set; }
-        public bool progressive { get; set; }
+        public string playerName { get; set; }
+        public ItemFlags itemFlags { get; set; }
         public long id { get; set; }
     }
 
-    private Dictionary<string, LocationData> locations = new Dictionary<string, LocationData>();
+    private Dictionary<string, LocationData> locations = new();
 
 
     public void CreateSession(string server, string user)
@@ -98,6 +99,16 @@ class ArchipelagoManager : MonoBehaviour
         return locations[location].itemName;
     }
 
+    public string GetPlayerName(string location)
+    {
+        return locations[location].playerName;
+    }
+
+    public ItemFlags GetItemFlags(string location)
+    {
+        return locations[location].itemFlags;
+    }
+
     public async Task GetOwnLocationData()
     {
         locations.Clear();
@@ -117,13 +128,15 @@ class ArchipelagoManager : MonoBehaviour
             if (scoutedItem == null || String.IsNullOrEmpty(scoutedItem.ItemName))
             {
                 locationData.player = 0;
-                locationData.progressive = false;
+                locationData.playerName = "No one";
+                locationData.itemFlags = ItemFlags.None;
                 locationData.itemId = 0;
                 if (String.IsNullOrEmpty(scoutedItem.ItemName))
                 {
                     Debug.LogError($"Player:{scoutedItem.Player.Name} Game:{scoutedItem.Player.Game}, ItemId:{scoutedItem.ItemId}");
                     locationData.player = scoutedItem.Player;
-                    locationData.progressive = (scoutedItem.Flags & ItemFlags.Advancement) != 0;
+                    locationData.playerName = scoutedItem.Player.Name;
+                    locationData.itemFlags = scoutedItem.Flags;
                     locationData.itemId = scoutedItem.ItemId;
                 }
                 else
@@ -135,8 +148,9 @@ class ArchipelagoManager : MonoBehaviour
             {
                 locationData.itemName = scoutedItem.ItemName;
                 locationData.itemId = scoutedItem.ItemId;
+                locationData.playerName = scoutedItem.Player.Name;
                 locationData.player = scoutedItem.Player;
-                locationData.progressive = (scoutedItem.Flags & ItemFlags.Advancement) != 0;
+                locationData.itemFlags = scoutedItem.Flags;
                 locationData.id = location;
             }
             locations.Add(currSession.Locations.GetLocationNameFromId(location, "Deathbulge"), locationData);

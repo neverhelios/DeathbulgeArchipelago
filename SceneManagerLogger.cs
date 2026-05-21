@@ -1,13 +1,16 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using HarmonyLib;
+using System.Threading.Tasks;
 
 
 namespace DeathbulgeArchipelagoClient;
 
 class SceneManagerLogger
 {
-    public static void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    public static bool bIsFieldLoaded { get; private set; } = false;
+
+    public static void OnSceneLoadedLog(Scene scene, LoadSceneMode mode)
     {
 
         Plugin.Logger.LogInfo($"Scene loaded: {scene.name} {mode}");
@@ -21,9 +24,24 @@ class SceneManagerLogger
         Plugin.Logger.LogInfo("-----------------------------------------------------------------");
     }
 
+    public static void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        Plugin.Logger.LogInfo($"Scene loaded: {scene.name} {mode}");
+        if (scene.name == "Field")
+            SetFieldLoadedAsync(3000);
+    }
+
+    private static async void SetFieldLoadedAsync(int time)
+    {
+        await Task.Delay(time);
+        bIsFieldLoaded = true;
+    }
+
     public static void OnSceneUnloaded(Scene scene)
     {
         Plugin.Logger.LogInfo($"Scene unloaded: {scene.name}");
+        if (scene.name == "Field")
+            bIsFieldLoaded = false;
     }
 
     public static void OnActiveSceneChanged(Scene sceneStart, Scene sceneFinished)

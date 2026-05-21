@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using PixelCrushers.DialogueSystem;
 
 using Field;
+using System.Threading;
 
 namespace DeathbulgeArchipelagoClient;
 
@@ -37,31 +38,39 @@ public class Plugin : BaseUnityPlugin
 
         if (logSceneLoadedConfig.Value)
         {
-            SceneManager.sceneLoaded += SceneManagerLogger.OnSceneLoaded;
-            SceneManager.sceneUnloaded += SceneManagerLogger.OnSceneUnloaded;
+            SceneManager.sceneLoaded += SceneManagerLogger.OnSceneLoadedLog;
             SceneManager.activeSceneChanged += SceneManagerLogger.OnActiveSceneChanged;
         }
+        SceneManager.sceneLoaded += SceneManagerLogger.OnSceneLoaded;
+        SceneManager.sceneUnloaded += SceneManagerLogger.OnSceneUnloaded;
+
 
         if (logDialogueConfig.Value)
             Harmony.CreateAndPatchAll(typeof(DialogueTriggerLogger_Patch));
 
-        Harmony.CreateAndPatchAll(typeof(DialogueTrigger_Patch));
+        Harmony.CreateAndPatchAll(typeof(TreasureManager_Patch));
 
         // StartCoroutine(DumpDatabaseWhenReady());
 
         Logger.LogInfo($"Plugin {MyPluginInfo.PLUGIN_GUID} has finished patching!");
+
+        Logger.LogInfo($"PATH Plugin {Paths.PluginPath}Deathbulge/DeathbulgeArchipelago/ressources");
     }
 
     void Update()
     {
-        // if(bCanGetItems)
-        while (itemsToDispatch.Count > 0)
+        if (SceneManagerLogger.bIsFieldLoaded)
         {
-            ItemInfo itemReceived = itemsToDispatch.Dequeue();
-            Plugin.Logger.LogInfo($"Thread ID: {System.Threading.Thread.CurrentThread.ManagedThreadId}");
-            Item item = DialogueManager.MasterDatabase.GetItem(Items.GetTreasureFromItemName(itemReceived.ItemName));
-            TreasureUI treasureUI = CommonObjects.GetTreasureUI();
-            treasureUI.Show(item);
+            while (itemsToDispatch.Count > 0)
+            {
+                // TODO: Ask items again if unload field
+                // TODO: Do not show if another is already showing -> Currently it gives everything, it just don't show this to the player
+                // TODO: Detect stocks to avoid duplicates
+                ItemInfo itemReceived = itemsToDispatch.Dequeue();
+                Item item = DialogueManager.MasterDatabase.GetItem(Items.GetTreasureFromItemName(itemReceived.ItemName));
+                TreasureUI treasureUI = CommonObjects.GetTreasureUI();
+                treasureUI.Show(item);
+            }
         }
     }
 

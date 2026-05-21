@@ -363,16 +363,11 @@
 		<Content Include="Directory.Build.props" />
 	</ItemGroup>
 
-	<Target Name="CopyArchipelagoToGame" AfterTargets="Build">
-	<Copy 
-		SourceFiles="@(ReferenceCopyLocalPaths)"
-		DestinationFolder="$(GamePath)\BepInEx\plugins\DeathbulgeArchipelagoClient"
-		Condition="'%(ReferenceCopyLocalPaths.Filename)' == 'Archipelago.MultiClient.Net'" />
-	</Target>
-
 	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
 		<Exec Command="COPY &quot;$(TargetPath)&quot; &quot;$(GamePath)\BepInEx\plugins\DeathbulgeArchipelagoClient&quot;" />
+		<Exec Command="COPY &quot;$(TargetDir)Archipelago.MultiClient.Net.dll&quot; &quot;$(GamePath)\BepInEx\plugins\DeathbulgeArchipelagoClient&quot;" />
 	</Target>
+
 	<ItemGroup Condition="'$(TargetFramework.TrimEnd(`0123456789`))' == 'net'">
 		<PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.2" PrivateAssets="all" />
 	</ItemGroup>

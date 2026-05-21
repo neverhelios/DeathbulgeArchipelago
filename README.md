@@ -7,3 +7,4 @@ TODO:
 - SHOPS
 - Change archipelago infos in game
 - Offline checks ?
+- Take into account the non linearity (Show some menus earlier, like key merch)
