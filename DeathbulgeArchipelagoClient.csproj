@@ -366,6 +366,7 @@
 	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
 		<Exec Command="COPY &quot;$(TargetPath)&quot; &quot;$(GamePath)\BepInEx\plugins\DeathbulgeArchipelagoClient&quot;" />
 		<Exec Command="COPY &quot;$(TargetDir)Archipelago.MultiClient.Net.dll&quot; &quot;$(GamePath)\BepInEx\plugins\DeathbulgeArchipelagoClient&quot;" />
+		<Exec Command="XCOPY &quot;$(ProjectDir)resources&quot; &quot;$(GamePath)\BepInEx\plugins\DeathbulgeArchipelagoClient\resources&quot; /E /I /Y" />
 	</Target>
 
 	<ItemGroup Condition="'$(TargetFramework.TrimEnd(`0123456789`))' == 'net'">

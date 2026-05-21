@@ -67,9 +67,11 @@ class TreasureManager_Patch
             ItemFlags itemFlags = ArchipelagoManager.instance.GetItemFlags(locationString);
 
             string itemTypeString;
+            Sprite itemSprite = ResourcesLoader.GetSprite("archipelago.png");
             if ((itemFlags & ItemFlags.Advancement) != 0)
             {
                 itemTypeString = "Progression";
+                itemSprite = ResourcesLoader.GetSprite("archipelago_arrow_up.png");
             }
             else if ((itemFlags & ItemFlags.Trap) != 0)
             {
@@ -78,6 +80,7 @@ class TreasureManager_Patch
             else if (itemFlags == 0)
             {
                 itemTypeString = "Filler";
+                itemSprite = ResourcesLoader.GetSprite("archipelago_grayscale.png");
             }
             else
             {
@@ -85,7 +88,7 @@ class TreasureManager_Patch
             }
 
             ShowTreasurePopup(ArchipelagoManager.instance.GetLocationItem(locationString), "Archipelago Item",
-                              itemTypeString, $"A {itemTypeString} item for {ArchipelagoManager.instance.GetPlayerName(locationString)}", "", false, "item-classchange");
+                              itemTypeString, $"A {itemTypeString} item for {ArchipelagoManager.instance.GetPlayerName(locationString)}", "", false, itemSprite);
 
             stopMethodInfo.Invoke(__instance, []);
             return false;
@@ -140,6 +143,11 @@ class TreasureManager_Patch
 
     public static void ShowTreasurePopup(string name, string title, string subtitle, string description, string charMod, bool activateCharMod, string treasureSprite)
     {
+        ShowTreasurePopup(name, title, subtitle, description, charMod, activateCharMod, CommonObjects.GetGlobal().assetLoader.GetGlobalSprite(treasureSprite));
+    }
+
+    public static void ShowTreasurePopup(string name, string title, string subtitle, string description, string charMod, bool activateCharMod, Sprite treasureSprite)
+    {
         TreasureUI treasureUI = CommonObjects.GetTreasureUI();
         Type treasureUIType = typeof(TreasureUI);
 
@@ -165,6 +173,6 @@ class TreasureManager_Patch
         FieldInfo eligibleCharContainerFieldInfo = itemWindowType.GetField("eligibleCharContainer", BindingFlags.NonPublic | BindingFlags.Instance);
         ((GameObject)eligibleCharContainerFieldInfo.GetValue(itemWindow)).SetActive(activateCharMod);
 
-        UIHelper.SetImageSprite(treasureUI.itemWindow.gearIcon, CommonObjects.GetGlobal().assetLoader.GetGlobalSprite(treasureSprite));
+        UIHelper.SetImageSprite(treasureUI.itemWindow.gearIcon, treasureSprite);
     }
 }
