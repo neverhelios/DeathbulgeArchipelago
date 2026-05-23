@@ -61,4 +61,13 @@ class Cheats_Patch
         CommonObjects.GetDamageCalc().RecomputeCurrent(comb, 1000);
     }
 
+    // Infinite damage
+    [HarmonyPatch(typeof(WorldCombatant))]
+    [HarmonyPatch("Damage")]
+    [HarmonyPrefix]
+    static void InfinitePower(ref int damage)
+    {
+        damage = 100000;
+    }
+
 }
