@@ -1,8 +1,10 @@
 using BepInEx;
+using HarmonyLib;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Reflection;
 using PixelCrushers.DialogueSystem;
 
 namespace DeathbulgeArchipelagoClient;
@@ -96,4 +98,23 @@ class DebugPrintLists
 
         Plugin.Logger.LogInfo($"Database dump écrit ici: {path}");
     }
+}
+
+class PrintAllSequencer_Patch
+{
+    static readonly FieldInfo shortcutsFieldInfo = typeof(SequencerShortcuts).GetField("shortcuts", BindingFlags.NonPublic | BindingFlags.Instance);
+    [HarmonyPatch(typeof(SequencerShortcuts))]
+    [HarmonyPatch("OnEnable")]
+    [HarmonyPrefix]
+    static void Prefix_ListAllSequencerShortcuts(SequencerShortcuts __instance)
+    {
+        Plugin.Logger.LogInfo($"There are {__instance.shortcuts.Length} shortcuts");
+
+        // for (int i = 0; i < __instance.shortcuts.Length; i++)
+        for (int i = 0; i < 10; i++)
+        {
+            Plugin.Logger.LogInfo($"\n\nShortcut {__instance.shortcuts[i].shortcut} :\n {__instance.shortcuts[i].value}");
+        }
+    }
+
 }

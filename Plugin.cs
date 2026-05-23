@@ -19,6 +19,8 @@ public class Plugin : BaseUnityPlugin
     internal static new ManualLogSource Logger;
     private static ConfigEntry<bool> logSceneLoadedConfig;
     private static ConfigEntry<bool> logDialogueConfig;
+    private static ConfigEntry<bool> logLuaShortcutsConfig;
+    internal static ConfigEntry<bool> logLuaCommmandsInterceptedConfig;
     private static ConfigEntry<bool> fullStatsConfig;
 
     private static readonly Queue<ItemInfo> itemsToDispatch = new();
@@ -31,6 +33,8 @@ public class Plugin : BaseUnityPlugin
 
         logSceneLoadedConfig = Config.Bind("Debug.Logging", "LogScenesLoaded", true, "For developpement purposes");
         logDialogueConfig = Config.Bind("Debug.Logging", "LogDialogue", true, "For developpement purposes");
+        logLuaShortcutsConfig = Config.Bind("Debug.Logging", "LogLuaShortcuts", true, "For developpement purposes");
+        logLuaCommmandsInterceptedConfig = Config.Bind("Debug.Logging", "LogLuaCommandsIntecepted", true, "For developpement purposes");
         fullStatsConfig = Config.Bind("Debug.Cheat", "FullStats", true, "All Stats at maximum for fast fights");
 
         this.gameObject.AddComponent<ArchipelagoManager>();
@@ -53,6 +57,9 @@ public class Plugin : BaseUnityPlugin
 
         if (fullStatsConfig.Value)
             Harmony.CreateAndPatchAll(typeof(Cheats_Patch));
+
+        if (logLuaShortcutsConfig.Value)
+            Harmony.CreateAndPatchAll(typeof(PrintAllSequencer_Patch));
 
         Harmony.CreateAndPatchAll(typeof(TreasureManager_Patch));
 

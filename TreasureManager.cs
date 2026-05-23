@@ -1,7 +1,9 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Reflection;
 using Archipelago.MultiClient.Net.Enums;
+using Combat.UI;
 using Field;
 using Global.UI;
 using HarmonyLib;
@@ -14,6 +16,36 @@ namespace DeathbulgeArchipelagoClient;
 
 class TreasureManager_Patch
 {
+    // Really bad way to patch lua but whatever, NO FUCKING INSTANCE OF Treasure.CurrentFlag WILL BE FORGOTTEN
+    [HarmonyPatch(typeof(Lua), "Run", new[] { typeof(string), typeof(bool), typeof(bool) })]
+    [HarmonyPrefix]
+    static bool PrefixLuaRunVener(ref string luaCode)
+    {
+        if (Plugin.logLuaCommmandsInterceptedConfig.Value)
+            Plugin.Logger.LogInfo("Lua.Run intercepted VENER : " + luaCode);
+
+        if (luaCode != null && luaCode.Contains("Variable[\"Treasure.CurrentFlag\"] =\""))
+        {
+            string locationString = luaCode.Split('"')[3];
+            ArchipelagoManager.instance.currSession?.Locations?.CompleteLocationChecks(ArchipelagoManager.instance.currSession?.Locations?.GetLocationIdFromName("Deathbulge", locationString) ?? -1);
+
+            if (ArchipelagoManager.instance.IsLocalLocation(locationString))
+            {
+                string itemName = ArchipelagoManager.instance.GetLocationItem(locationString);
+                string treasureName = Items.GetTreasureFromItemName(itemName);
+                Plugin.Logger.LogInfo($"======= The treasure get will should be {locationString} but it will be {treasureName}");
+                luaCode = $"Variable[\"Treasure.CurrentFlag\"] = \"{treasureName}\"";
+            }
+            else
+            {
+                luaCode = $"Variable[\"Treasure.CurrentFlag\"] = \"Archipelago Item - {locationString}\"";
+                Plugin.Logger.LogInfo($"On va t'archipelaguer à coup de Archipelago Item - {locationString}");
+            }
+        }
+        return true;
+    }
+
+    // Send checks for classic treasures
     [HarmonyPatch(typeof(DialogueLua))]
     [HarmonyPatch("SetVariable", [typeof(string), typeof(object)])]
     [HarmonyPrefix]
@@ -49,6 +81,83 @@ class TreasureManager_Patch
         return true;
     }
 
+    [HarmonyPatch(typeof(VictoryWindow))]
+    [HarmonyPatch("BeatDropPopupsAsync", [typeof(List<Item>)])]
+    [HarmonyReversePatch]
+    static IEnumerator OriginalBeatDropPopupsAsync(object instance, List<Item> beats)
+        => throw new NotImplementedException();
+
+    static bool _skipPatch = false;
+
+    // Send checks for beats
+    [HarmonyPatch(typeof(VictoryWindow))]
+    [HarmonyPatch("BeatDropPopupsAsync", [typeof(List<Item>)])]
+    [HarmonyPrefix]
+    static bool Prefix_VictoryWindow_BeatDropPopupsAsync_SendTreasureCheck(VictoryWindow __instance, ref IEnumerator __result, List<Item> beats)
+    {
+        // Using HarmonyReversePatch had issues
+        if (_skipPatch) return true;
+
+        var remoteArchipelagoLocations = new List<string>();
+
+        // Replace directly the item values
+        for (int i = beats.Count - 1; i >= 0; i--)
+        {
+            string beatName = LuaInterpreterExtensions.ObjectToLuaValue(beats[i].Name).ToString();
+            string locationString = Items.GetTreasureFromItemName(beatName);
+
+            // Not currently handled beat drop
+            if (locationString == "NO LOCATION")
+                continue;
+
+            ArchipelagoManager.instance.currSession?.Locations?.CompleteLocationChecks(ArchipelagoManager.instance.currSession?.Locations?.GetLocationIdFromName("Deathbulge", locationString) ?? -1);
+            string itemName = ArchipelagoManager.instance.GetLocationItem(locationString);
+
+
+            Plugin.Logger.LogInfo($"\n\n\n+++++++++++++++ The beat drop name is {beatName}, so treasure {locationString} and will be replaced by {itemName} ++++++++++++++++++++\n\n\n");
+            if (ArchipelagoManager.instance.IsLocalLocation(locationString))
+            {
+                beats[i] = DialogueManager.MasterDatabase.GetItem(itemName);
+            }
+            else
+            {
+                // Replace item bc it's archipelago remote
+                remoteArchipelagoLocations.Add(locationString);
+                beats.RemoveAt(i);
+            }
+        }
+
+        __result = ShowRemoteArchipelagoTreasures(remoteArchipelagoLocations, beats);
+        return false;
+
+
+        IEnumerator ShowRemoteArchipelagoTreasures(List<string> remoteArchipelagoLocations, List<Item> beats)
+        {
+            TreasureUI uiTrea = CommonObjects.GetTreasureUI();
+            Func<bool> waitWindowCache = null;
+            foreach (string locationString in remoteArchipelagoLocations)
+            {
+                ShowArchipelagoItemPopup(locationString);
+                Func<bool> func;
+                if ((func = waitWindowCache) == null)
+                {
+                    func = (waitWindowCache = () => !uiTrea.window.activeInHierarchy);
+                }
+                yield return new WaitUntil(func);
+            }
+
+            Plugin.Logger.LogInfo($"Instance is {__instance} and beats are {beats}");
+
+            // Avoid calling the patch recursively lol
+            var main = AccessTools.Field(typeof(VictoryWindow), "main").GetValue(__instance);
+            var mainMono = (MonoBehaviour)main;
+            yield return mainMono.StartCoroutine(OriginalBeatDropPopupsAsync(__instance, beats));
+            Plugin.Logger.LogInfo("Coroutine originale terminée");
+        }
+    }
+
+
+
     // Avoid spamming GetMethod 
     static readonly MethodInfo getParameterMethodInfo = typeof(SequencerCommandShowTreasure).GetMethod("GetParameter", BindingFlags.NonPublic | BindingFlags.Instance);
     static readonly MethodInfo stopMethodInfo = typeof(SequencerCommandShowTreasure).GetMethod("Stop", BindingFlags.NonPublic | BindingFlags.Instance);
@@ -63,39 +172,12 @@ class TreasureManager_Patch
         if (locationString.Contains("Archipelago Item - "))
         {
             locationString = locationString.Replace("Archipelago Item - ", "");
-
-            ItemFlags itemFlags = ArchipelagoManager.instance.GetItemFlags(locationString);
-
-            string itemTypeString;
-            Sprite itemSprite = ResourcesLoader.GetSprite("archipelago.png");
-            if ((itemFlags & ItemFlags.Advancement) != 0)
-            {
-                itemTypeString = "Progression";
-                itemSprite = ResourcesLoader.GetSprite("archipelago_arrow_up.png");
-            }
-            else if ((itemFlags & ItemFlags.Trap) != 0)
-            {
-                itemTypeString = "Trap";
-            }
-            else if (itemFlags == 0)
-            {
-                itemTypeString = "Filler";
-                itemSprite = ResourcesLoader.GetSprite("archipelago_grayscale.png");
-            }
-            else
-            {
-                itemTypeString = "Useful";
-            }
-
-            ShowTreasurePopup(ArchipelagoManager.instance.GetLocationItem(locationString), "Archipelago Item",
-                              itemTypeString, $"A {itemTypeString} item for {ArchipelagoManager.instance.GetPlayerName(locationString)}", "", false, itemSprite);
-
+            ShowArchipelagoItemPopup(locationString);
             stopMethodInfo.Invoke(__instance, []);
             return false;
         }
         return true;
     }
-
 
     static readonly MethodInfo getParameterSVMethodInfo = typeof(SequencerCommandSetVariableField).GetMethod("GetParameter", BindingFlags.NonPublic | BindingFlags.Instance);
     static readonly MethodInfo stopSVMethodInfo = typeof(SequencerCommandSetVariableField).GetMethod("Stop", BindingFlags.NonPublic | BindingFlags.Instance);
@@ -139,6 +221,35 @@ class TreasureManager_Patch
         DialogueLua.SetVariable(parameter, obj);
         stopSVMethodInfo.Invoke(__instance, []);
         return false;
+    }
+
+    private static void ShowArchipelagoItemPopup(string locationString)
+    {
+        ItemFlags itemFlags = ArchipelagoManager.instance.GetItemFlags(locationString);
+
+        string itemTypeString;
+        Sprite itemSprite = ResourcesLoader.GetSprite("archipelago.png");
+        if ((itemFlags & ItemFlags.Advancement) != 0)
+        {
+            itemTypeString = "Progression";
+            itemSprite = ResourcesLoader.GetSprite("archipelago_arrow_up.png");
+        }
+        else if ((itemFlags & ItemFlags.Trap) != 0)
+        {
+            itemTypeString = "Trap";
+        }
+        else if (itemFlags == 0)
+        {
+            itemTypeString = "Filler";
+            itemSprite = ResourcesLoader.GetSprite("archipelago_grayscale.png");
+        }
+        else
+        {
+            itemTypeString = "Useful";
+        }
+
+        ShowTreasurePopup(ArchipelagoManager.instance.GetLocationItem(locationString), "Archipelago Item",
+                          itemTypeString, $"A {itemTypeString} item for {ArchipelagoManager.instance.GetPlayerName(locationString)}", "", false, itemSprite);
     }
 
     public static void ShowTreasurePopup(string name, string title, string subtitle, string description, string charMod, bool activateCharMod, string treasureSprite)

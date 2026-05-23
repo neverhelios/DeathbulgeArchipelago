@@ -67,7 +67,7 @@ class DialogueTriggerLogger_Patch
 
             foreach (var entry in conversation.dialogueEntries)
             {
-                if (entry.Sequence.ToString() == "Continue()")
+                if (entry.Sequence.ToString() == "Continue()" && entry.userScript == "")
                 {
                     Plugin.Logger.LogInfo($"Entry {entry.id} -> Empty");
                 }

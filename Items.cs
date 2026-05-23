@@ -51,7 +51,7 @@ class Items
 
     public static string GetTreasureFromItemName(string itemName)
     {
-        return itemToTreasureNames[itemName];
+        return itemToTreasureNames.GetValueOrDefault(itemName, "NO LOCATION");
     }
 
     static readonly Dictionary<string, string> itemToTreasureNames = new()
