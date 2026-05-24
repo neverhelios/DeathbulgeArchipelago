@@ -29,36 +29,39 @@ class Cheats_Patch
     [HarmonyPostfix]
     static void Postfix_RecomputeStats_SetMaxStats(Combatant comb, Item classObj, List<Item> patches, ActionBar actionBar, bool isCounter)
     {
-        Stats statLayer = new Stats();
-        Dictionary<string, float> statValues = (Dictionary<string, float>)statValuesFieldInfo.GetValue(statLayer);
-        statValues["MaxLife"] = 1000f;
-        statValues["MaxHype"] = 1000f;
-        statValues["Focus"] = 1000f;
-        statValues["Spirit"] = 1000f;
-        statValues["Resistance"] = 1000f;
-        statValues["Strength"] = 1000f;
-        statValues["Toughness"] = 1000f;
-        statValues["Speed"] = 1000f;
-        // statValues["IncomingDamage"] = 1000f;
-        // statValues["IncomingNoiseDamage"] = 1000f;
-        // statValues["IncomingMelodyDamage"] = 1000f;
-        // statValues["IncomingHealing"] = 1000f;
-        // statValues["OutgoingDamage"] = 1000f;
-        // statValues["OutgoingNoiseDamage"] = 1000f;
-        // statValues["OutgoingMelodyDamage"] = 1000f;
-        // statValues["OutgoingBeatDamage"] = 1000f;
-        // statValues["OutgoingModDamage"] = 1000f;
-        // statValues["OutgoingMerchDamage"] = 1000f;
-        // statValues["OutgoingHealing"] = 1000f;
-        // statValues["OutgoingBeatHealing"] = 1000f;
-        // statValues["OutgoingModHealing"] = 1000f;
-        // statValues["OutgoingMerchHealing"] = 1000f;
-        statValues["LifeRegen"] = 1000f;
-        statValues["SpecialHypeRegen"] = 1000f;
-        statLayer.StatUsage = StatUsageList.Additive;
-        comb.AddStatsLayer(statLayer);
+        if (Plugin.fullStatsConfig.Value)
+        {
+            Stats statLayer = new Stats();
+            Dictionary<string, float> statValues = (Dictionary<string, float>)statValuesFieldInfo.GetValue(statLayer);
+            statValues["MaxLife"] = 1000f;
+            statValues["MaxHype"] = 1000f;
+            statValues["Focus"] = 1000f;
+            statValues["Spirit"] = 1000f;
+            statValues["Resistance"] = 1000f;
+            statValues["Strength"] = 1000f;
+            statValues["Toughness"] = 1000f;
+            statValues["Speed"] = 1000f;
+            // statValues["IncomingDamage"] = 1000f;
+            // statValues["IncomingNoiseDamage"] = 1000f;
+            // statValues["IncomingMelodyDamage"] = 1000f;
+            // statValues["IncomingHealing"] = 1000f;
+            // statValues["OutgoingDamage"] = 1000f;
+            // statValues["OutgoingNoiseDamage"] = 1000f;
+            // statValues["OutgoingMelodyDamage"] = 1000f;
+            // statValues["OutgoingBeatDamage"] = 1000f;
+            // statValues["OutgoingModDamage"] = 1000f;
+            // statValues["OutgoingMerchDamage"] = 1000f;
+            // statValues["OutgoingHealing"] = 1000f;
+            // statValues["OutgoingBeatHealing"] = 1000f;
+            // statValues["OutgoingModHealing"] = 1000f;
+            // statValues["OutgoingMerchHealing"] = 1000f;
+            statValues["LifeRegen"] = 1000f;
+            statValues["SpecialHypeRegen"] = 1000f;
+            statLayer.StatUsage = StatUsageList.Additive;
+            comb.AddStatsLayer(statLayer);
 
-        CommonObjects.GetDamageCalc().RecomputeCurrent(comb, 1000);
+            CommonObjects.GetDamageCalc().RecomputeCurrent(comb, 1000);
+        }
     }
 
     // Infinite damage
@@ -67,7 +70,8 @@ class Cheats_Patch
     [HarmonyPrefix]
     static void InfinitePower(ref int damage)
     {
-        damage = 100000;
+        if (Plugin.ohkoConfig.Value)
+            damage = 100000;
     }
 
 }

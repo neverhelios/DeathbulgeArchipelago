@@ -21,7 +21,9 @@ public class Plugin : BaseUnityPlugin
     private static ConfigEntry<bool> logDialogueConfig;
     private static ConfigEntry<bool> logLuaShortcutsConfig;
     internal static ConfigEntry<bool> logLuaCommmandsInterceptedConfig;
-    private static ConfigEntry<bool> fullStatsConfig;
+    private static ConfigEntry<bool> enableCheatsConfig;
+    internal static ConfigEntry<bool> fullStatsConfig;
+    internal static ConfigEntry<bool> ohkoConfig;
 
     private static readonly Queue<ItemInfo> itemsToDispatch = new();
 
@@ -35,7 +37,9 @@ public class Plugin : BaseUnityPlugin
         logDialogueConfig = Config.Bind("Debug.Logging", "LogDialogue", true, "For developpement purposes");
         logLuaShortcutsConfig = Config.Bind("Debug.Logging", "LogLuaShortcuts", true, "For developpement purposes");
         logLuaCommmandsInterceptedConfig = Config.Bind("Debug.Logging", "LogLuaCommandsIntecepted", true, "For developpement purposes");
+        enableCheatsConfig = Config.Bind("Debug.Cheat", "Enable", true, "Enable cheats (For debugging right ?)");
         fullStatsConfig = Config.Bind("Debug.Cheat", "FullStats", true, "All Stats at maximum for fast fights");
+        ohkoConfig = Config.Bind("Debug.Cheat", "OHKO", true, "Every damage is a One Hit KO (Ennemies included I'm too lazy this is for debugging)");
 
         this.gameObject.AddComponent<ArchipelagoManager>();
         ArchipelagoManager.instance = gameObject.GetComponent<ArchipelagoManager>();
@@ -55,7 +59,7 @@ public class Plugin : BaseUnityPlugin
         if (logDialogueConfig.Value)
             Harmony.CreateAndPatchAll(typeof(DialogueTriggerLogger_Patch));
 
-        if (fullStatsConfig.Value)
+        if (enableCheatsConfig.Value)
             Harmony.CreateAndPatchAll(typeof(Cheats_Patch));
 
         if (logLuaShortcutsConfig.Value)

@@ -173,6 +173,7 @@ class Items
         {"[Mod] Total Reinterpretation", "Dream04Treasure02"},
         {"[Stock] Increase 1 (Dream04Treasure01)", "Dream04Treasure01"},
         {"[Stock] Increase 1 (Dream04Treasure03)", "Dream04Treasure03"},
+        {"Treasure Money", "[Treasure] FoggyRewardMoney"},
     };
 
 
