@@ -34,9 +34,9 @@ class ArchipelagoManager : MonoBehaviour
     private Dictionary<string, LocationData> locations = new();
 
 
-    public void CreateSession(string server, string user)
+    public void CreateSession(string server, int port, string user, string password)
     {
-        currSession = ArchipelagoSessionFactory.CreateSession(server, 38281);
+        currSession = ArchipelagoSessionFactory.CreateSession(server, port);
 
         // Must go BEFORE a successful connection attempt
         currSession.Items.ItemReceived += (receivedItemsHelper) =>
@@ -49,7 +49,7 @@ class ArchipelagoManager : MonoBehaviour
         LoginResult result;
         try
         {
-            result = currSession.TryConnectAndLogin("Deathbulge", user, ItemsHandlingFlags.AllItems);
+            result = currSession.TryConnectAndLogin("Deathbulge", user, ItemsHandlingFlags.AllItems, null, null, null, password, true);
         }
         catch (Exception e)
         {

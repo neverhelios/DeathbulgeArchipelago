@@ -21,9 +21,16 @@ public class Plugin : BaseUnityPlugin
     private static ConfigEntry<bool> logDialogueConfig;
     private static ConfigEntry<bool> logLuaShortcutsConfig;
     internal static ConfigEntry<bool> logLuaCommmandsInterceptedConfig;
+
     private static ConfigEntry<bool> enableCheatsConfig;
     internal static ConfigEntry<bool> fullStatsConfig;
     internal static ConfigEntry<bool> ohkoConfig;
+
+    private static ConfigEntry<string> serverAdressConfig;
+    private static ConfigEntry<int> serverPortConfig;
+    private static ConfigEntry<string> slotNameConfig;
+    private static ConfigEntry<string> slotPasswordConfig;
+
 
     private void Awake()
     {
@@ -40,10 +47,15 @@ public class Plugin : BaseUnityPlugin
         fullStatsConfig = Config.Bind("Debug.Cheat", "FullStats", true, "All Stats at maximum for fast fights");
         ohkoConfig = Config.Bind("Debug.Cheat", "OHKO", true, "Every damage is a One Hit KO (Ennemies included I'm too lazy this is for debugging)");
 
+        serverAdressConfig = Config.Bind("Archipelago.Login", "Adress", "archipelago.gg", "The adress of your Archipelago instance");
+        serverPortConfig = Config.Bind("Archipelago.Login", "Port", 38281, "The port of your Archipelago instance");
+        slotNameConfig = Config.Bind("Archipelago.Login", "Slot Name", "Player1", "Your slot name in game");
+        slotPasswordConfig = Config.Bind("Archipelago.Login", "Password", "", "The password of your game");
+
         this.gameObject.AddComponent<ArchipelagoManager>();
         ArchipelagoManager.instance = gameObject.GetComponent<ArchipelagoManager>();
 
-        ArchipelagoManager.instance.CreateSession("localhost", "DeathbulgeTest");
+        ArchipelagoManager.instance.CreateSession(serverAdressConfig.Value, serverPortConfig.Value, slotNameConfig.Value, slotPasswordConfig.Value);
 
         if (enableCheatsConfig.Value)
             Harmony.CreateAndPatchAll(typeof(Cheats_Patch));
