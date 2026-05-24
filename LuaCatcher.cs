@@ -1,3 +1,4 @@
+using Archipelago.MultiClient.Net.Helpers;
 using HarmonyLib;
 using PixelCrushers.DialogueSystem;
 
@@ -16,37 +17,40 @@ class LuaCatcher
 
         if (luaCode != null)
         {
-            catchVictoryCondition(ref luaCode);
-
-            catchTreasureCurrentFlag(ref luaCode);
-
-
+            CatchVictoryCondition(ref luaCode);
+            CatchTreasureCurrentFlag(ref luaCode);
+            CatchTicketsSpawnCondition(ref luaCode);
         }
         return true;
     }
 
-    static void catchVictoryCondition(ref string luaCode)
+    static void CatchVictoryCondition(ref string luaCode)
     {
+        // The line is there ONLY ONE TIME and I know exactly the line
         if (luaCode.Contains("Variable[\"BOTB.FinalKwakDefeated\"] = true;"))
         {
             ArchipelagoManager.instance.currSession?.SetGoalAchieved();
         }
     }
 
-    static void catchTreasureCurrentFlag(ref string luaCode)
+    static void CatchTreasureCurrentFlag(ref string luaCode)
     {
         if (luaCode.Contains("Variable[\"Treasure.CurrentFlag\"] =\""))
         {
             var lines = luaCode.Split('\n');
             for (int i = 0; i < lines.Length; i++)
             {
-                if (lines[i].Contains("Treasure.CurrentFlag"))
+                // This has to be in the right line
+                if (lines[i].Contains("Variable[\"Treasure.CurrentFlag\"] =\""))
                 {
                     string locationString = lines[i].Split('"')[3];
 
                     lines[i] = $"Variable[\"Treasure.CurrentFlag\"] = \"{TreasureManager.SendCheckAndGetItem(locationString)}\"";
 
-                    ArchipelagoManager.instance.currSession?.Locations?.CompleteLocationChecks(ArchipelagoManager.instance.currSession?.Locations?.GetLocationIdFromName("Deathbulge", locationString) ?? -1);
+                    ILocationCheckHelper locations = ArchipelagoManager.instance.currSession?.Locations;
+                    if (locations == null) continue;
+
+                    locations.CompleteLocationChecks(locations.GetLocationIdFromName("Deathbulge", locationString));
 
                     if (ArchipelagoManager.instance.IsLocalLocation(locationString))
                     {
@@ -63,6 +67,36 @@ class LuaCatcher
                 }
             }
             luaCode = string.Join('\n', lines);
+        }
+    }
+
+    static void CatchTicketsSpawnCondition(ref string luaCode)
+    {
+        // Sadly only the regexp can handle both
+        // return HasItem("[Key Merch] Old Prize Draw Ticket 1")
+        // and
+        // return (HasItem("[Key Merch] Old Prize Draw Ticket 1")) == false
+
+        if (luaCode.Contains("HasItem(\"[Key Merch] Old Prize Draw Ticket"))
+        {
+            luaCode = System.Text.RegularExpressions.Regex.Replace(
+                luaCode,
+                @"HasItem\(""\[Key Merch\] Old Prize Draw Ticket (\d+)""\)",
+                match =>
+                {
+                    string itemName = $"[Key Merch] Old Prize Draw Ticket {match.Groups[1].Value}";
+
+                    string locationString = Items.GetTreasureFromItemName(itemName);
+
+                    ILocationCheckHelper locations = ArchipelagoManager.instance.currSession?.Locations;
+                    if (locations == null) return match.Value;
+
+                    long locationId = locations.GetLocationIdFromName("Deathbulge", locationString);
+
+                    bool isMissing = locations.AllMissingLocations.Contains(locationId);
+                    return isMissing ? "false" : "true";
+                }
+            );
         }
     }
 }

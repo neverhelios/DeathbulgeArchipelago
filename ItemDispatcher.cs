@@ -89,14 +89,7 @@ class ItemDispatcher
         if (itemInfo != null)
         {
             Plugin.Logger.LogInfo($"Got item {itemInfo.ItemName} from {itemInfo.LocationDisplayName} (game {itemInfo.LocationGame})");
-            if (itemInfo.Player.Slot == player)
-                Plugin.Logger.LogInfo($"Oh it's mine ! Skipping this one :)");
-            else
-            {
-                //List item
-                itemsToDispatch.Enqueue(itemInfo);
-            }
-
+            itemsToDispatch.Enqueue(itemInfo);
         }
     }
 }
