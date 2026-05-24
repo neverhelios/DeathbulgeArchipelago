@@ -3,7 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using Archipelago.MultiClient.Net.Enums;
+using Archipelago.MultiClient.Net.Helpers;
 using Combat.UI;
+using Core;
 using Field;
 using Global.UI;
 using HarmonyLib;
@@ -58,6 +60,30 @@ class TreasureManager
         }
         return true;
     }
+
+    // Detect the Archipelago handled beats
+    [HarmonyPatch(typeof(CoreHelper))]
+    [HarmonyPatch("HasBeatOrUpgradedVersion", [typeof(Item)])]
+    [HarmonyPrefix]
+    static bool HasBeatInArchipelagoLocationsChecked(ref bool __result, Item baseBeat)
+    {
+
+        string beatName = LuaInterpreterExtensions.ObjectToLuaValue(baseBeat.Name).ToString();
+        string locationString = Items.GetTreasureFromItemName(beatName);
+
+        // Not currently handled beat drop so let the function continue
+        if (locationString == "NO LOCATION")
+            return true;
+
+        ILocationCheckHelper locations = ArchipelagoManager.instance.currSession?.Locations;
+        if (locations == null) return true;
+
+        long locationId = locations.GetLocationIdFromName("Deathbulge", locationString);
+        __result = locations.AllLocationsChecked.Contains(locationId);
+
+        return false;
+    }
+
 
     [HarmonyPatch(typeof(VictoryWindow))]
     [HarmonyPatch("BeatDropPopupsAsync", [typeof(List<Item>)])]
