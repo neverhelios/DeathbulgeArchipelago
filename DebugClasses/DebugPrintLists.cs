@@ -32,9 +32,9 @@ class DebugPrintLists
         }
     }
 
-    bool dumped = false;
+    static bool dumped = false;
 
-    IEnumerator DumpDatabaseWhenReady()
+    public static IEnumerator DumpDatabaseWhenReady()
     {
         while (DialogueManager.MasterDatabase == null)
             yield return null;
@@ -72,6 +72,12 @@ class DebugPrintLists
                 sb.AppendLine($"    Text: {entry.DialogueText}");
                 sb.AppendLine($"    Sequence: {entry.Sequence}");
                 sb.AppendLine($"    Lua: {entry.userScript}");
+                sb.AppendLine($"    Conditions: {entry.conditionsString}");
+                sb.AppendLine($"    False Cond Action: {entry.falseConditionAction}");
+                foreach (var link in entry.outgoingLinks)
+                {
+                    sb.AppendLine($"      Link: {link.destinationDialogueID}");
+                }
             }
         }
 

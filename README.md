@@ -19,9 +19,6 @@ TODO:
 Known Issues:
 
 - Double proc for the Spiky Silver Thing because the location check is received too early, maybe have a global variable that avoid to to show an item if a dialogue is started and not finished
-
-- Check of the Spiky Silver Thing. It DOES send a check so this is not the worst issue, but can give you the item too early (even if it doesn't really change anything)
-  -> How to solve (just for my dev purpose): Change the way "SideGigTonewood01.State" is updated so treat the fork differently
 - Money will be given every time you connect, enjoy :)
 - `[Key Merch] Class Changer` is unlocked during the conversation with the tooltip, not with the `[Treasure] MODPODClass` check (This will be a reoccuring issue for sure)
 - `[Key Merch] Glam Reader` Doesn't unlock the Glam jauge (Fuck my life the key items are fucking useless)

@@ -67,19 +67,26 @@ class DialogueTriggerLogger_Patch
 
             foreach (var entry in conversation.dialogueEntries)
             {
-                if (entry.Sequence.ToString() == "Continue()" && entry.userScript == "")
+                if (entry.Sequence.ToString() == "Continue()" && entry.userScript == "" && entry.DialogueText == "" && entry.conditionsString == "")
                 {
-                    Plugin.Logger.LogInfo($"Entry {entry.id} -> Empty");
+                    Plugin.Logger.LogInfo($"-- Entry {entry.id} -> Empty");
                 }
                 else
                 {
-                    Plugin.Logger.LogInfo($"Entry {entry.id}: ");
+                    Plugin.Logger.LogInfo($"-- Entry {entry.id}: ");
                     if (entry.DialogueText != "")
                         Plugin.Logger.LogInfo($"Text: {entry.DialogueText}");
                     if (entry.Sequence != "")
                         Plugin.Logger.LogInfo($"Sequence: {entry.Sequence}");
                     if (entry.userScript != "")
                         Plugin.Logger.LogInfo($"Lua: {entry.userScript}\n");
+                    if (entry.conditionsString != "")
+                        Plugin.Logger.LogInfo($"Condition: {entry.conditionsString}\n");
+                    foreach (var link in entry.outgoingLinks)
+                    {
+                        Plugin.Logger.LogInfo($"Link: {link.destinationDialogueID}");
+                    }
+
                 }
             }
         }

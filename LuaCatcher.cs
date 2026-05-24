@@ -1,4 +1,5 @@
 using Archipelago.MultiClient.Net.Helpers;
+using Core;
 using HarmonyLib;
 using PixelCrushers.DialogueSystem;
 
@@ -20,6 +21,7 @@ class LuaCatcher
             CatchVictoryCondition(ref luaCode);
             CatchTreasureCurrentFlag(ref luaCode);
             CatchTicketsSpawnCondition(ref luaCode);
+            CatchGillianGigCondition(ref luaCode);
         }
         return true;
     }
@@ -99,4 +101,23 @@ class LuaCatcher
             );
         }
     }
+
+    static void CatchGillianGigCondition(ref string luaCode)
+    {
+        // I'm going the regexp way and you can't stop me
+        if (luaCode.Contains("Variable[\"SideGigTonewood01.State\"] < 3"))
+        {
+            luaCode = System.Text.RegularExpressions.Regex.Replace(
+                luaCode,
+                @"Variable\[""SideGigTonewood01\.State""\] < 3",
+                match =>
+                {
+                    Item item = DialogueManager.MasterDatabase.GetItem("[Key Merch] Shiny Spiky Thing");
+                    return CoreHelper.HasItem(item) ? "false" : "true";
+                }
+            );
+            Plugin.Logger.LogInfo($"GILLIAN, YOU'RE NOW {luaCode}");
+        }
+    }
+
 }
