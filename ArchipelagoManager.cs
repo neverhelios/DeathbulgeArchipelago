@@ -42,19 +42,7 @@ class ArchipelagoManager : MonoBehaviour
         currSession.Items.ItemReceived += (receivedItemsHelper) =>
         {
             ItemInfo itemReceived = receivedItemsHelper.PeekItem();
-
-            if (itemReceived != null)
-            {
-                Plugin.Logger.LogInfo($"Got item {itemReceived.ItemName} from {itemReceived.LocationDisplayName} (game {itemReceived.LocationGame})");
-                if (itemReceived.Player.Slot == player)
-                    Plugin.Logger.LogInfo($"Oh it's mine ! Skipping this one :)");
-                else
-                {
-                    Plugin.AddDispatchedItem(itemReceived);
-                }
-
-            }
-
+            ItemDispatcher.AddDispatchedItem(itemReceived);
             receivedItemsHelper.DequeueItem();
         };
 
@@ -85,6 +73,7 @@ class ArchipelagoManager : MonoBehaviour
         }
         logInfos = (LoginSuccessful)result;
         player = logInfos.Slot;
+        ItemDispatcher.player = logInfos.Slot;
 
         GetOwnLocationData().Wait();
     }
