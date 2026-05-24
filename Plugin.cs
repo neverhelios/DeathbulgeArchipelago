@@ -74,7 +74,8 @@ public class Plugin : BaseUnityPlugin
         SceneManager.sceneLoaded += ItemDispatcher.OnSceneLoaded;
         SceneManager.sceneUnloaded += ItemDispatcher.OnSceneUnloaded;
 
-        Harmony.CreateAndPatchAll(typeof(TreasureManager_Patch));
+        Harmony.CreateAndPatchAll(typeof(LuaCatcher));
+        Harmony.CreateAndPatchAll(typeof(TreasureManager));
 
         // StartCoroutine(DumpDatabaseWhenReady());
 

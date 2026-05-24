@@ -14,50 +14,27 @@ using UnityEngine;
 
 namespace DeathbulgeArchipelagoClient;
 
-class TreasureManager_Patch
+class TreasureManager
 {
-    // Really bad way to patch lua but whatever, NO FUCKING INSTANCE OF Treasure.CurrentFlag WILL BE FORGOTTEN
-    [HarmonyPatch(typeof(Lua), "Run", new[] { typeof(string), typeof(bool), typeof(bool) })]
-    [HarmonyPrefix]
-    static bool PrefixLuaRunVener(ref string luaCode)
+    public static string SendCheckAndGetItem(string locationString, bool only_check = false)
     {
-        if (Plugin.logLuaCommmandsInterceptedConfig.Value)
-            Plugin.Logger.LogInfo("Lua.Run intercepted VENER : " + luaCode);
+        ArchipelagoManager.instance.currSession?.Locations?.CompleteLocationChecks(ArchipelagoManager.instance.currSession?.Locations?.GetLocationIdFromName("Deathbulge", locationString) ?? -1);
 
-        if (luaCode != null)
+        if (only_check)
+            return "";
+
+        if (ArchipelagoManager.instance.IsLocalLocation(locationString))
         {
-            if (luaCode.Contains("Variable[\"BOTB.FinalKwakDefeated\"] = true;"))
-            {
-                ArchipelagoManager.instance.currSession?.SetGoalAchieved();
-            }
-            if (luaCode.Contains("Variable[\"Treasure.CurrentFlag\"] =\""))
-            {
-                var lines = luaCode.Split('\n');
-                for (int i = 0; i < lines.Length; i++)
-                {
-                    if (lines[i].Contains("Treasure.CurrentFlag"))
-                    {
-                        string locationString = lines[i].Split('"')[3];
-                        ArchipelagoManager.instance.currSession?.Locations?.CompleteLocationChecks(ArchipelagoManager.instance.currSession?.Locations?.GetLocationIdFromName("Deathbulge", locationString) ?? -1);
-
-                        if (ArchipelagoManager.instance.IsLocalLocation(locationString))
-                        {
-                            string itemName = ArchipelagoManager.instance.GetLocationItem(locationString);
-                            string treasureName = Items.GetTreasureFromItemName(itemName);
-                            Plugin.Logger.LogInfo($"======= The treasure get will should be {locationString} but it will be {treasureName}");
-                            lines[i] = $"Variable[\"Treasure.CurrentFlag\"] = \"{treasureName}\"";
-                        }
-                        else
-                        {
-                            lines[i] = $"Variable[\"Treasure.CurrentFlag\"] = \"Archipelago Item - {locationString}\"";
-                            Plugin.Logger.LogInfo($"On va t'archipelaguer à coup de Archipelago Item - {locationString}");
-                        }
-                    }
-                }
-                luaCode = string.Join('\n', lines);
-            }
+            string itemName = ArchipelagoManager.instance.GetLocationItem(locationString);
+            string treasureName = Items.GetTreasureFromItemName(itemName);
+            Plugin.Logger.LogInfo($"======= The treasure get will should be {locationString} but it will be {treasureName}");
+            return treasureName;
         }
-        return true;
+        else
+        {
+            Plugin.Logger.LogInfo($"On va t'archipelaguer à coup de Archipelago Item - {locationString}");
+            return $"Archipelago Item - {locationString}";
+        }
     }
 
     // Send checks for classic treasures
@@ -68,9 +45,6 @@ class TreasureManager_Patch
     {
         if (variable == "Treasure.CurrentFlag")
         {
-            string locationString = LuaInterpreterExtensions.ObjectToLuaValue(value).ToString();
-            ArchipelagoManager.instance.currSession?.Locations?.CompleteLocationChecks(ArchipelagoManager.instance.currSession?.Locations?.GetLocationIdFromName("Deathbulge", locationString) ?? -1);
-
             Lua.WasInvoked = true;
             LuaTable luaTable = Lua.Environment.GetValue("Variable") as LuaTable;
             if (luaTable == null)
@@ -78,19 +52,8 @@ class TreasureManager_Patch
                 return false;
             }
 
-            if (ArchipelagoManager.instance.IsLocalLocation(locationString))
-            {
-                string itemName = ArchipelagoManager.instance.GetLocationItem(locationString);
-                string treasureName = Items.GetTreasureFromItemName(itemName);
-                Plugin.Logger.LogInfo($"======= The treasure get will should be {LuaInterpreterExtensions.ObjectToLuaValue(value)} but it will be {treasureName}");
-                luaTable.SetNameValue(DialogueLua.StringToTableIndex(variable), new LuaString(treasureName));
-            }
-            else
-            {
-                luaTable.SetNameValue(DialogueLua.StringToTableIndex(variable), new LuaString($"Archipelago Item - {locationString}"));
-                Plugin.Logger.LogInfo($"On va t'archipelaguer à coup de Archipelago Item - {locationString}");
-
-            }
+            string locationString = LuaInterpreterExtensions.ObjectToLuaValue(value).ToString();
+            luaTable.SetNameValue(DialogueLua.StringToTableIndex(variable), new LuaString(SendCheckAndGetItem(locationString)));
             return false;
         }
         return true;
@@ -125,9 +88,8 @@ class TreasureManager_Patch
             if (locationString == "NO LOCATION")
                 continue;
 
-            ArchipelagoManager.instance.currSession?.Locations?.CompleteLocationChecks(ArchipelagoManager.instance.currSession?.Locations?.GetLocationIdFromName("Deathbulge", locationString) ?? -1);
+            SendCheckAndGetItem(locationString, true);
             string itemName = ArchipelagoManager.instance.GetLocationItem(locationString);
-
 
             Plugin.Logger.LogInfo($"\n\n\n+++++++++++++++ The beat drop name is {beatName}, so treasure {locationString} and will be replaced by {itemName} ++++++++++++++++++++\n\n\n");
             if (ArchipelagoManager.instance.IsLocalLocation(locationString))
@@ -183,7 +145,7 @@ class TreasureManager_Patch
     static bool Prefix_SequencerCommandShowTreasure_Start(SequencerCommandShowTreasure __instance)
     {
         string locationString = (string)getParameterMethodInfo.Invoke(__instance, [0, null]);
-
+        // Show a popup for remote items instead of doing the whole Treasure Showing (of an item that doesn't even exist lol)
         if (locationString.Contains("Archipelago Item - "))
         {
             locationString = locationString.Replace("Archipelago Item - ", "");
