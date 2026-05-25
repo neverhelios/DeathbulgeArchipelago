@@ -50,7 +50,6 @@ Well I didn't test in another PC so I can't really be sure that it will work on 
 - SHOPS
 - Take into account the non linearity (Show some menus earlier, like key merch)
 - Should allow to get out of the bus and out of the lab more freely, and make the bus free
-- Better organisation of the code (Like make an interface for lua capturing)
 - Claire bottle Sanity
 - Door Sanity
 - Beat Sanity
@@ -66,5 +65,4 @@ Well I didn't test in another PC so I can't really be sure that it will work on 
 - The sampler tuto is broken lol, it only sets you the beats you already have, and changes your class only if you have found it
 - `[Key Merch] Your Inner Boot` don't lock correctly but who is surprised ? x(
 - Well maybe the `[Key Merch] 16th Deck Keycard` doesn't work to the softlock doesn't exist looooooooool
-- Verify how the `[Key Merch] Old Prize Draw Ticket` work for their count (spoiler they don't)
 - If you take All claire's bottle in one go it gives you one check, but if to take it step by step it gives you two other checks that are mutually exclusive with the fist one xD I'll try to give everything at the end of the quest anyway

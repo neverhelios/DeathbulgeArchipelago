@@ -22,6 +22,7 @@ class LuaCatcher
             CatchTreasureCurrentFlag(ref luaCode);
             CatchTicketsSpawnCondition(ref luaCode);
             CatchGillianGigCondition(ref luaCode);
+            CatchPriceDrawCount(ref luaCode);
         }
         return true;
     }
@@ -120,4 +121,34 @@ class LuaCatcher
         }
     }
 
+    static void CatchPriceDrawCount(ref string luaCode)
+    {
+        // Catch comparison
+        if (luaCode.Contains("Variable[\"Common.PrizeDrawCount\"] <"))
+        {
+            luaCode = System.Text.RegularExpressions.Regex.Replace(
+                luaCode,
+                @"Variable\[""Common\.PrizeDrawCount""\] <",
+                match =>
+                {
+                    int numberOfTickets = Items.CountAllPrizeTicketsGot();
+                    return $"{numberOfTickets} <";
+                }
+            );
+        }
+
+        // Catch calculation
+        if (luaCode.Contains("Variable[\"Common.PrizeDrawCount\"] - Variable[\"Common.PrizeDrawRedeem\"]"))
+        {
+            luaCode = System.Text.RegularExpressions.Regex.Replace(
+                luaCode,
+                @"Variable\[""Common\.PrizeDrawCount""\] - Variable\[""Common\.PrizeDrawRedeem""\]",
+                match =>
+                {
+                    int numberOfTickets = Items.CountAllPrizeTicketsGot();
+                    return $"{numberOfTickets} - Variable[\"Common.PrizeDrawRedeem\"]";
+                }
+            );
+        }
+    }
 }

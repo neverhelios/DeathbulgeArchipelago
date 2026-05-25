@@ -59,6 +59,14 @@ class Items
         return itemToTreasureNames.GetValueOrDefault(itemName, "NO LOCATION");
     }
 
+    public static int CountAllPrizeTicketsGot()
+    {
+        int numberOfTickets = 0;
+        for (int i = 0; i < 10; i++)
+            numberOfTickets += CoreHelper.HasItem(DialogueManager.MasterDatabase.GetItem($"[Key Merch] Old Prize Draw Ticket {i + 1}")) ? 1 : 0;
+        return numberOfTickets;
+    }
+
     static readonly Dictionary<string, string> itemToTreasureNames = new()
     {
         {"[Stock] Increase 1 (Tonewood01Treasure01)", "Tonewood01Treasure01"},
@@ -223,7 +231,6 @@ class ItemsBehavior_Patch
     {
         Item item = DialogueManager.MasterDatabase.GetItem("[Key Merch] Glam Reader");
         __result = CoreHelper.HasItem(item);
-        Plugin.Logger.LogInfo($"++++++++++++++++++++++++++ I have the item {__result} ++++++++++++++++++++++++++");
         return false;
     }
 
