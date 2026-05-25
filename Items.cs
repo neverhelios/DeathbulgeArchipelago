@@ -2,6 +2,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using HarmonyLib;
+using Field;
+using PixelCrushers.DialogueSystem;
+using Core;
+using DeathbulgeArchipelagoClient;
 
 class LocatedItem
 {
@@ -194,3 +199,45 @@ class Items
     };
 
 }
+
+// Make key items great again
+class ItemsBehavior_Patch
+{
+    // Use the ClassChange 
+    [HarmonyPatch(typeof(FieldMain))]
+    [HarmonyPatch("CanChangeClassSlot")]
+    [HarmonyPrefix]
+    static bool FixClassChangeCondition(ref bool __result)
+    {
+        Item item = DialogueManager.MasterDatabase.GetItem("[Key Merch] Class Changer");
+        __result = CoreHelper.HasItem(item);
+        return false;
+    }
+
+
+    // Use the GlamBar
+    [HarmonyPatch(typeof(Party))]
+    [HarmonyPatch("IsGlamUnlocked")]
+    [HarmonyPrefix]
+    static bool FixGlamUnlockedCondition(ref bool __result)
+    {
+        Item item = DialogueManager.MasterDatabase.GetItem("[Key Merch] Glam Reader");
+        __result = CoreHelper.HasItem(item);
+        Plugin.Logger.LogInfo($"++++++++++++++++++++++++++ I have the item {__result} ++++++++++++++++++++++++++");
+        return false;
+    }
+
+    [HarmonyPatch(typeof(Party))]
+    [HarmonyPatch("IsPerformanceUnlocked")]
+    [HarmonyPrefix]
+    static bool FixPerformanceUnlockedCondition(ref bool __result)
+    {
+
+        Item item = DialogueManager.MasterDatabase.GetItem("[Key Merch] Glam Reader");
+        __result = CoreHelper.HasItem(item);
+        if (__result)
+            return false;
+        return true;
+    }
+}
+

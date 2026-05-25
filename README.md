@@ -5,8 +5,8 @@ Work VERY in progress, this repo will contain only the Archipelago client, the a
 # WARNING !!!!!
 
 - This is still a WIP, and yes it can be finished but you need to be careful, you will be softlocked if you go to the bus without floor access cards and if they're not on the bus !!!
-So I advise to hint at least the Access cards
-This will be resolved shortly by allowing you to get out of the bus but currently beware
+  So I advise to hint at least the Access cards
+  This will be resolved shortly by allowing you to get out of the bus but currently beware
 
 - You MUST be connected to the archipelago server to play a randomized game, even solo.
 
@@ -63,7 +63,8 @@ Well I didn't test in another PC so I can't really be sure that it will work on 
 
 - Double proc for the Spiky Silver Thing because the location check is received too early, maybe have a global variable that avoid to to show an item if a dialogue is started and not finished
 - Money will be given every time you connect, enjoy :)
-- `[Key Merch] Class Changer` is unlocked during the conversation with the tooltip, not with the `[Treasure] MODPODClass` check (This will be a reoccuring issue for sure)
-- `[Key Merch] Glam Reader` Doesn't unlock the Glam jauge (Fuck my life the key items are fucking useless)
 - The sampler tuto is broken lol, it only sets you the beats you already have, and changes your class only if you have found it
-- Inner Boot don't lock correctly but who is surprised ? x(
+- `[Key Merch] Your Inner Boot` don't lock correctly but who is surprised ? x(
+- Well maybe the `[Key Merch] 16th Deck Keycard` doesn't work to the softlock doesn't exist looooooooool
+- Verify how the `[Key Merch] Old Prize Draw Ticket` work for their count (spoiler they don't)
+- If you take All claire's bottle in one go it gives you one check, but if to take it step by step it gives you two other checks that are mutually exclusive with the fist one xD I'll try to give everything at the end of the quest anyway

@@ -76,6 +76,7 @@ public class Plugin : BaseUnityPlugin
 
         Harmony.CreateAndPatchAll(typeof(LuaCatcher));
         Harmony.CreateAndPatchAll(typeof(TreasureManager));
+        Harmony.CreateAndPatchAll(typeof(ItemsBehavior_Patch));
 
         // StartCoroutine(DebugPrintLists.DumpDatabaseWhenReady());
 
