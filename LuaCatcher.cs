@@ -23,6 +23,7 @@ class LuaCatcher
             CatchTicketsSpawnCondition(ref luaCode);
             CatchGillianGigCondition(ref luaCode);
             CatchPriceDrawCount(ref luaCode);
+            CatchInnerBootCondition(ref luaCode);
         }
         return true;
     }
@@ -151,4 +152,34 @@ class LuaCatcher
             );
         }
     }
+
+    static void CatchInnerBootCondition(ref string luaCode)
+    {
+        // Maybe this first one is useless
+        if (luaCode.Contains("Variable[\"Common.DoorkickLevel\"] >= 3"))
+        {
+            luaCode = System.Text.RegularExpressions.Regex.Replace(
+                luaCode,
+                @"Variable\[""Common\.DoorkickLevel""\] >= 3",
+                match =>
+                {
+                    Item item = DialogueManager.MasterDatabase.GetItem("[Key Merch] Your Inner Boot");
+                    return CoreHelper.HasItem(item) ? "true" : "false";
+                }
+            );
+        }
+
+        if (luaCode.Contains("Variable[\"Tonewood.JimTalked\"] > 0"))
+        {
+            luaCode = System.Text.RegularExpressions.Regex.Replace(
+                luaCode,
+                @"Variable\[""Tonewood\.JimTalked""\] > 0",
+                match =>
+                {
+                    return "true";
+                }
+            );
+        }
+    }
+
 }

@@ -63,6 +63,5 @@ Well I didn't test in another PC so I can't really be sure that it will work on 
 - Double proc for the Spiky Silver Thing because the location check is received too early, maybe have a global variable that avoid to to show an item if a dialogue is started and not finished
 - Money will be given every time you connect, enjoy :)
 - The sampler tuto is broken lol, it only sets you the beats you already have, and changes your class only if you have found it
-- `[Key Merch] Your Inner Boot` don't lock correctly but who is surprised ? x(
 - Well maybe the `[Key Merch] 16th Deck Keycard` doesn't work to the softlock doesn't exist looooooooool
 - If you take All claire's bottle in one go it gives you one check, but if to take it step by step it gives you two other checks that are mutually exclusive with the fist one xD I'll try to give everything at the end of the quest anyway

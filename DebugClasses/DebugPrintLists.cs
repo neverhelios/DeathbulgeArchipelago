@@ -68,7 +68,7 @@ class DebugPrintLists
 
             foreach (var entry in convo.dialogueEntries)
             {
-                sb.AppendLine($"  Entry ID: {entry.id}");
+                sb.AppendLine($"  -- Entry ID: {entry.id} --");
                 sb.AppendLine($"    Text: {entry.DialogueText}");
                 sb.AppendLine($"    Sequence: {entry.Sequence}");
                 sb.AppendLine($"    Lua: {entry.userScript}");
@@ -76,7 +76,7 @@ class DebugPrintLists
                 sb.AppendLine($"    False Cond Action: {entry.falseConditionAction}");
                 foreach (var link in entry.outgoingLinks)
                 {
-                    sb.AppendLine($"      Link: {link.destinationDialogueID}");
+                    sb.AppendLine($"  Link: {link.destinationDialogueID}");
                 }
             }
         }
