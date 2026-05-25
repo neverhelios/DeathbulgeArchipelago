@@ -2,6 +2,18 @@
 
 Work VERY in progress, this repo will contain only the Archipelago client, the apworld is in another castle
 
+# WARNING !!!!!
+
+- This is still a WIP, and yes it can be finished but you need to be careful, you will be softlocked if you go to the bus without floor access cards and if they're not on the bus !!!
+So I advise to hint at least the Access cards
+This will be resolved shortly by allowing you to get out of the bus but currently beware
+
+- You MUST be connected to the archipelago server to play a randomized game, even solo.
+
+## Changes with the base game and limitations
+
+- No changes with the base game now (But shortly, you will be able to teleport to bopstead from anywhere, and go back to hoho from the lab / go back to Bopstead from the bus)
+
 ## Install the mod
 
 First you need [BepInEx V 5.4 64 bit](https://docs.bepinex.dev/articles/user_guide/installation/index.html#tabpanel_bHGHmlrG6S_tabid-win) on your game
@@ -13,7 +25,7 @@ First you need [BepInEx V 5.4 64 bit](https://docs.bepinex.dev/articles/user_gui
 5. Start the Game once
 6. Open the `BepInEx` Folder
 7. Open the `plugins` Folder
-8. Paste the [DeathbulgeArchipelagoClient.zip](https://github.com/never-helios/DeathbulgeArchipelago/releases/latest/download/DeathbulgeArchipelagoClient.zip) to the current folder
+8. Paste the [DeathbulgeArchipelagoClient.zip](https://github.com/neverhelios/DeathbulgeArchipelago/releases/latest/download/DeathbulgeArchipelagoClient.zip) to the current folder
 9. Unzip the zip in the folder
 
 And that's it !
@@ -30,7 +42,9 @@ Well I didn't test in another PC so I can't really be sure that it will work on 
 
 ## TODO:
 
+- QOL show when connected or not to the server
 - Manage archipelago deconnection
+- Add archipelago data to the savefile to play offline
 - More user friendly configuration
 
 - SHOPS
@@ -45,7 +59,7 @@ Well I didn't test in another PC so I can't really be sure that it will work on 
 - Show message that shows obtained items during a skip
 - Bufferize the items allowing to play offline and send check when offline
 
-Known Issues:
+## Known Issues:
 
 - Double proc for the Spiky Silver Thing because the location check is received too early, maybe have a global variable that avoid to to show an item if a dialogue is started and not finished
 - Money will be given every time you connect, enjoy :)
