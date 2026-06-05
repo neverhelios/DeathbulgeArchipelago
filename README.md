@@ -4,15 +4,13 @@ Work VERY in progress, this repo will contain only the Archipelago client, the a
 
 # WARNING !!!!!
 
-- This is still a WIP, and yes it can be finished but you need to be careful, you will be softlocked if you go to the bus without floor access cards and if they're not on the bus !!!
-  So I advise to hint at least the Access cards
-  This will be resolved shortly by allowing you to get out of the bus but currently beware
-
 - You MUST be connected to the archipelago server to play a randomized game, even solo.
 
 ## Changes with the base game and limitations
 
-- No changes with the base game now (But shortly, you will be able to teleport to bopstead from anywhere, and go back to hoho from the lab / go back to Bopstead from the bus)
+- You can leave the bus whenever you want (well at some point you will need to do some OOB but fuck it I'll fix it later)
+
+- Shortly, you will be able to teleport to bopstead from anywhere, and go back to hoho from the lab
 
 ## Install the mod
 
@@ -57,6 +55,13 @@ Well I didn't test in another PC so I can't really be sure that it will work on 
 - Transition randomizer
 - Show message that shows obtained items during a skip
 - Bufferize the items allowing to play offline and send check when offline
+
+Dev only
+
+- Use Conversation model for everything instead of lua.run
+- Create a function for displaying dialogue entry in the console more easily
+- Create a dictionary (key is tuple convID & entryID) that allow change the dialogues texts in O(1) instead of ifs
+- Find a way to add completely new conversations so I can just send links to these new convs
 
 ## Known Issues:
 

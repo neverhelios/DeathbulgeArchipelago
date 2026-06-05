@@ -1,12 +1,217 @@
+using Field;
 using HarmonyLib;
 using Language.Lua;
 using PixelCrushers.DialogueSystem;
 using System.Collections.Generic;
+using System.Reflection;
 using UnityEngine;
 
 
 namespace DeathbulgeArchipelagoClient;
 
+public class DialogueCatcher : MonoBehaviour
+{
+    [HarmonyPatch(typeof(DialogueSystemController))]
+    [HarmonyPatch("StartConversation", [typeof(string), typeof(int)])]
+    [HarmonyPrefix]
+    static void Prefix_StartConversation(string title, int initialDialogueEntryID)
+    {
+        if (Plugin.logDialogueConfig.Value)
+            Plugin.Logger.LogInfo($"######################## START DIALOGUE CONVERSATION STATE {title}");
+    }
+
+    [HarmonyPatch(typeof(MapWarp))]
+    [HarmonyPatch("PrimeWarp")]
+    [HarmonyPostfix]
+    static void PrimeWarpLogger()
+    {
+        if (Plugin.logWarpConfig.Value)
+        {
+            Plugin.Logger.LogInfo($"Je me prime le warp");
+            Plugin.Logger.LogInfo($"-> WarpDestinationMap: {DialogueLua.GetVariable("Common.WarpDestinationMap").AsString}");
+            Plugin.Logger.LogInfo($"-> WarpDestinationObject: {DialogueLua.GetVariable("Common.WarpDestinationObject").AsString}");
+            Plugin.Logger.LogInfo($"-> WarpDestinationArea: {DialogueLua.GetVariable("WarpDestinationArea").AsString}");
+            Plugin.Logger.LogInfo($"-> WarpChangeFacing: {DialogueLua.GetVariable("Common.WarpChangeFacing").AsString}");
+            Plugin.Logger.LogInfo($"-> WarpFacing: {DialogueLua.GetVariable("Common.WarpFacing").AsString}");
+            Plugin.Logger.LogInfo($"-> WarpIndoors: {DialogueLua.GetVariable("Common.WarpIndoors").AsString}");
+            Plugin.Logger.LogInfo($"-> WarpIndoorObject: {DialogueLua.GetVariable("Common.WarpIndoorObject").AsString}");
+            Plugin.Logger.LogInfo($"-> WarpIndoorRoomObject: {DialogueLua.GetVariable("Common.WarpIndoorRoomObject").AsString}");
+            Plugin.Logger.LogInfo($"-> WarpDestinationLayer: {DialogueLua.GetVariable("Common.WarpDestinationLayer").AsString}");
+            Plugin.Logger.LogInfo($"-> WarpDestinationSortLayer: {DialogueLua.GetVariable("Common.WarpDestinationSortLayer").AsString}");
+            Plugin.Logger.LogInfo($"-> WarpFadeOut: {DialogueLua.GetVariable("Common.WarpFadeOut").AsString}");
+            Plugin.Logger.LogInfo($"-> WarpAutosave: {DialogueLua.GetVariable("Common.WarpAutosave").AsString}");
+            Plugin.Logger.LogInfo($"-> LastWarpDestination: {DialogueLua.GetVariable("Common.LastWarpDestination").AsString}");
+            Plugin.Logger.LogInfo($"-> CurrentArea: {DialogueLua.GetVariable("Common.CurrentArea").AsString}");
+            Plugin.Logger.LogInfo($"-> CurrentMap: {DialogueLua.GetVariable("Common.CurrentMap").AsString}");
+            // CommonObjects.GetFieldMain().mapLoader.PreviousArea = DialogueLua.GetVariable("Common.CurrentArea").AsString;
+        }
+    }
+
+    [HarmonyPatch(typeof(ConversationModel))]
+    [HarmonyPatch("GetState", [typeof(DialogueEntry), typeof(bool), typeof(bool), typeof(bool)])]
+    [HarmonyPrefix]
+    static void Prefix_GetState(DialogueEntry entry, bool includeLinks, bool stopAtFirstValid = false, bool skipExecution = false)
+    {
+        if (Plugin.logDialogueConfig.Value)
+            Plugin.Logger.LogInfo($"[CONVERSATION MODEL STATE {entry.conversationID}|{entry.id}]");
+    }
+
+    [HarmonyPatch(typeof(ConversationState))]
+    [HarmonyPatch(MethodType.Constructor, [typeof(Subtitle), typeof(Response[]), typeof(Response[]), typeof(bool)])]
+    [HarmonyPrefix]
+    static bool Prefix_ConversationState(ref Subtitle subtitle, Response[] npcResponses, Response[] pcResponses, bool isGroup = false)
+    {
+
+        if (Plugin.logDialogueConfig.Value)
+        {
+            Plugin.Logger.LogInfo($"- THE STATE WILL SHOW \"{subtitle.dialogueEntry.subtitleText}\" -");
+            Plugin.Logger.LogInfo($"- AND HAVE {npcResponses.Length} NPC Responses AND  {pcResponses.Length} PC Responses -");
+            foreach (var response in npcResponses)
+            {
+                Plugin.Logger.LogInfo($"- NPC DESTINATION ENTRY IS {response.destinationEntry.conversationID}|{response.destinationEntry.id}");
+            }
+            foreach (var response in pcResponses)
+            {
+                Plugin.Logger.LogInfo($"- PC DESTINATION ENTRY IS {response.destinationEntry.conversationID}|{response.destinationEntry.id}");
+            }
+        }
+
+        // Entry manipulation
+        if (subtitle.dialogueEntry.conversationID == 571 && subtitle.dialogueEntry.id == 10)
+        {
+            subtitle.formattedText.text = "Well the door is open, why not get out of the bus ?";
+        }
+
+
+        return true;
+    }
+
+    static readonly FieldInfo databaseFieldInfo = typeof(ConversationModel).GetField("m_database", BindingFlags.NonPublic | BindingFlags.Instance);
+    static readonly MethodInfo evaluateLinksMethodInfo = typeof(ConversationModel).GetMethod("EvaluateLinksAtPriority", BindingFlags.NonPublic | BindingFlags.Instance);
+    [HarmonyPatch(typeof(ConversationModel))]
+    [HarmonyPatch("EvaluateLinksAtPriority")]
+    [HarmonyPrefix]
+    static bool Prefix_EvaluateLinks(ConversationModel __instance, ConditionPriority priority, DialogueEntry entry, List<Response> npcResponses, List<Response> pcResponses, List<DialogueEntry> visited)
+    {
+        bool bHasLinkPossible = false;
+        foreach (var link in entry.outgoingLinks)
+        {
+            if (link.priority == priority)
+            {
+                bHasLinkPossible = true;
+            }
+        }
+        if (bHasLinkPossible)
+        {
+            // TODO: Make this waaaaay more clean
+            // Link manipulation
+            if (entry.conversationID == 571 && entry.id == 4)
+            {
+                Plugin.Logger.LogInfo($"____________________ I FORCE YOU YOU NOT SPEAK TO COALED ____________________");
+                DialogueEntry evaluatedDialogueEntry = ((DialogueDatabase)databaseFieldInfo.GetValue(__instance)).GetDialogueEntry(entry.outgoingLinks[0]);
+                Lua.Run(evaluatedDialogueEntry.userScript, DialogueDebug.logInfo, true);
+                evaluatedDialogueEntry.onExecute.Invoke();
+                for (int j = 4; j >= 0; j--)
+                {
+                    int num = npcResponses.Count + pcResponses.Count;
+                    evaluateLinksMethodInfo.Invoke(__instance, [(ConditionPriority)j, evaluatedDialogueEntry, npcResponses, pcResponses, visited, false]);
+
+                    if (npcResponses.Count + pcResponses.Count > num)
+                    {
+                        break;
+                    }
+                }
+                return false;
+            }
+
+            if (entry.conversationID == 571 && entry.id == 10)
+            {
+                Plugin.Logger.LogInfo($"____________________ GET OUT OF MY BUS ____________________");
+                // TODO: Create a function that allows to TP to every entrance
+                // Conv 268, Dialogue 107 allows to go at the bus station
+                Link tpOutofBusLink = new(entry.conversationID, entry.id, 455, 66);
+
+                DialogueEntry evaluatedDialogueEntry = ((DialogueDatabase)databaseFieldInfo.GetValue(__instance)).GetDialogueEntry(tpOutofBusLink);
+                Plugin.Logger.LogInfo($"== Sequence: {evaluatedDialogueEntry.Sequence} ==");
+
+                // evaluatedDialogueEntry.Sequence = "SendMessage(PrimeWarp,,Tonewood06-Exit02);";
+                superPrimeWarp();
+
+                Lua.Run(evaluatedDialogueEntry.userScript, DialogueDebug.logInfo, true);
+                evaluatedDialogueEntry.onExecute.Invoke();
+                for (int j = 4; j >= 0; j--)
+                {
+                    int num = npcResponses.Count + pcResponses.Count;
+                    evaluateLinksMethodInfo.Invoke(__instance, [(ConditionPriority)j, evaluatedDialogueEntry, npcResponses, pcResponses, visited, false]);
+
+                    if (npcResponses.Count + pcResponses.Count > num)
+                    {
+                        break;
+                    }
+                }
+                return false;
+            }
+
+            if (Plugin.logDialogueConfig.Value)
+            {
+                Plugin.Logger.LogInfo($"");
+                Plugin.Logger.LogInfo($">>>>>>>>>>>>>>>>>>>>>>>> CONVERSATION LINE {entry.conversationID}|{entry.id}");
+                if (entry.DialogueText != "")
+                    Plugin.Logger.LogInfo($"Text: {entry.DialogueText}");
+                if (entry.Sequence != "")
+                    Plugin.Logger.LogInfo($"Sequence: {entry.Sequence}");
+                if (entry.userScript != "")
+                    Plugin.Logger.LogInfo($"Lua: {entry.userScript}\n");
+                if (entry.conditionsString != "")
+                    Plugin.Logger.LogInfo($"Condition: {entry.conditionsString}\n");
+                Plugin.Logger.LogInfo($"IsGroup: {entry.isGroup} | IsRoot: {entry.isRoot}\n");
+
+                foreach (var link in entry.outgoingLinks)
+                {
+                    if (link.priority == priority)
+                    {
+                        Plugin.Logger.LogInfo($"[Evaluate link] for {entry.conversationID}|{entry.id}");
+                        DialogueEntry evaluatedDialogueEntry = ((DialogueDatabase)databaseFieldInfo.GetValue(__instance)).GetDialogueEntry(link);
+                        if (evaluatedDialogueEntry.conditionsString != "" || evaluatedDialogueEntry.falseConditionAction != "")
+                            Plugin.Logger.LogInfo($"Dialogue conditions: {evaluatedDialogueEntry.conditionsString} -> {evaluatedDialogueEntry.falseConditionAction}");
+                        Plugin.Logger.LogInfo($"Link: {link.originConversationID}|{link.originDialogueID} -> {link.destinationConversationID}|{link.destinationDialogueID}");
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
+    static public void superPrimeWarp()
+    {
+        DialogueLua.SetVariable("Common.WarpDestinationMap", "Bopstead02");
+        DialogueLua.SetVariable("Common.WarpDestinationObject", "BusStopDestination");
+        DialogueLua.SetVariable("WarpDestinationArea", "Bopstead");
+        DialogueLua.SetVariable("Common.WarpChangeFacing", true);
+        DialogueLua.SetVariable("Common.WarpFacing", 1);
+        DialogueLua.SetVariable("Common.WarpIndoors", true);
+        DialogueLua.SetVariable("Common.WarpIndoorObject", "Bus Station");
+        DialogueLua.SetVariable("Common.WarpIndoorRoomObject", "Interior (Floor 0)");
+        DialogueLua.SetVariable("Common.WarpDestinationLayer", "Indoor");
+        DialogueLua.SetVariable("Common.WarpDestinationSortLayer", "IndoorObjects");
+        DialogueLua.SetVariable("Common.WarpFadeOut", true);
+        DialogueLua.SetVariable("Common.WarpAutosave", true);
+        DialogueLua.SetVariable("Common.LastWarpDestination", "Bopstead02@BusStopDestination");
+        CommonObjects.GetFieldMain().mapLoader.PreviousArea = "TheBus";
+        DialogueLua.SetVariable("Common.CurrentArea", "Bopstead");
+        DialogueLua.SetVariable("Common.CurrentMap", "Bopstead02");
+        // if (this.movePlayerTo != null)
+        // {
+        //     FieldPlayer fieldPlayer = CommonObjects.GetFieldPlayer();
+        //     Vector3 vector = this.movePlayerTo.position - fieldPlayer.transform.position;
+        //     fieldPlayer.entity.Move(vector, fieldPlayer.NormalSpeed);
+        // }
+        CommonObjects.GetFieldMain().skipButton.Clear();
+    }
+
+}
+
+// Legacy logger
 class DialogueTriggerLogger_Patch
 {
     [HarmonyPatch(typeof(DialogueSystemTrigger))]
@@ -84,7 +289,7 @@ class DialogueTriggerLogger_Patch
                         Plugin.Logger.LogInfo($"Condition: {entry.conditionsString}\n");
                     foreach (var link in entry.outgoingLinks)
                     {
-                        Plugin.Logger.LogInfo($"Link: {link.destinationDialogueID}");
+                        Plugin.Logger.LogInfo($"Link: {link.originConversationID}|{link.originDialogueID} -> {link.destinationConversationID}|{link.destinationDialogueID}");
                     }
 
                 }

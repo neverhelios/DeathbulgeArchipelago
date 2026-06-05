@@ -1,15 +1,9 @@
-﻿using Archipelago.MultiClient.Net.Models;
-using BepInEx;
+﻿using BepInEx;
 using BepInEx.Logging;
 using BepInEx.Configuration;
 using UnityEngine.SceneManagement;
 using HarmonyLib;
-using System.Collections.Generic;
-using PixelCrushers.DialogueSystem;
 
-using Field;
-using System.Threading;
-using Core;
 
 namespace DeathbulgeArchipelagoClient;
 
@@ -18,7 +12,9 @@ public class Plugin : BaseUnityPlugin
 {
     internal static new ManualLogSource Logger;
     private static ConfigEntry<bool> logSceneLoadedConfig;
-    private static ConfigEntry<bool> logDialogueConfig;
+    internal static ConfigEntry<bool> logWarpConfig;
+    internal static ConfigEntry<bool> logDialogueConfig;
+    private static ConfigEntry<bool> legacyLogDialogueConfig;
     private static ConfigEntry<bool> logLuaShortcutsConfig;
     internal static ConfigEntry<bool> logLuaCommmandsInterceptedConfig;
 
@@ -39,7 +35,9 @@ public class Plugin : BaseUnityPlugin
         Logger.LogInfo($"Plugin {MyPluginInfo.PLUGIN_GUID} is loaded!");
 
         logSceneLoadedConfig = Config.Bind("Debug.Logging", "LogScenesLoaded", true, "For developpement purposes");
+        logWarpConfig = Config.Bind("Debug.Logging", "LogWarp", true, "For developpement purposes");
         logDialogueConfig = Config.Bind("Debug.Logging", "LogDialogue", true, "For developpement purposes");
+        legacyLogDialogueConfig = Config.Bind("Debug.Logging", "LegacyLogDialogue", true, "For developpement purposes");
         logLuaShortcutsConfig = Config.Bind("Debug.Logging", "LogLuaShortcuts", true, "For developpement purposes");
         logLuaCommmandsInterceptedConfig = Config.Bind("Debug.Logging", "LogLuaCommandsIntecepted", true, "For developpement purposes");
 
@@ -60,7 +58,7 @@ public class Plugin : BaseUnityPlugin
         if (enableCheatsConfig.Value)
             Harmony.CreateAndPatchAll(typeof(Cheats_Patch));
 
-        if (logDialogueConfig.Value)
+        if (legacyLogDialogueConfig.Value)
             Harmony.CreateAndPatchAll(typeof(DialogueTriggerLogger_Patch));
 
         if (logLuaShortcutsConfig.Value)
@@ -77,6 +75,9 @@ public class Plugin : BaseUnityPlugin
         Harmony.CreateAndPatchAll(typeof(LuaCatcher));
         Harmony.CreateAndPatchAll(typeof(TreasureManager));
         Harmony.CreateAndPatchAll(typeof(ItemsBehavior_Patch));
+        Harmony.CreateAndPatchAll(typeof(DialogueCatcher));
+        Harmony.CreateAndPatchAll(typeof(PlacedItemCatcher));
+
 
         // StartCoroutine(DebugPrintLists.DumpDatabaseWhenReady());
 
