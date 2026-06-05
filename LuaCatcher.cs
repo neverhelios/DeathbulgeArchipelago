@@ -24,6 +24,7 @@ class LuaCatcher
             CatchGillianGigCondition(ref luaCode);
             CatchPriceDrawCount(ref luaCode);
             CatchInnerBootCondition(ref luaCode);
+            CatchBusKeycardsCondition(ref luaCode);
         }
         return true;
     }
@@ -181,5 +182,35 @@ class LuaCatcher
             );
         }
     }
+
+    static void CatchBusKeycardsCondition(ref string luaCode)
+    {
+        if (luaCode.Contains("Variable[\"Bus.ElevatorF14\"]  and"))
+        {
+            luaCode = System.Text.RegularExpressions.Regex.Replace(
+                luaCode,
+                @"Variable\[""Bus\.ElevatorF14""\]  and",
+                match =>
+                {
+                    Item item = DialogueManager.MasterDatabase.GetItem("[Key Merch] 14th Deck Keycard");
+                    return CoreHelper.HasItem(item) ? "true  and" : "false  and";
+                }
+            );
+        }
+
+        if (luaCode.Contains("Variable[\"Bus.ElevatorF13\"]  and"))
+        {
+            luaCode = System.Text.RegularExpressions.Regex.Replace(
+                luaCode,
+                @"Variable\[""Bus\.ElevatorF13""\]  and",
+                match =>
+                {
+                    Item item = DialogueManager.MasterDatabase.GetItem("[Key Merch] 13th Deck Keycard");
+                    return CoreHelper.HasItem(item) ? "true  and" : "false  and";
+                }
+            );
+        }
+    }
+
 
 }
