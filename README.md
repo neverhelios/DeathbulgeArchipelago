@@ -10,7 +10,8 @@ Work VERY in progress, this repo will contain only the Archipelago client, the a
 
 - You can leave the bus whenever you want (well at some point you will need to do some OOB but fuck it I'll fix it later)
 - You can leave the lab by the loser couch (well it breaks some portraits but you just need to return to main menu to do this)
-- Shortly, you will be able to teleport to bopstead from anywhere
+- You can return to the lab by being kidnapped AGAIN (You may want to skip the countless kidnappings by skipping the cutscenes)
+- You can return to Bopstead by the bus earlier (if you want to return to Hoho, please enter the bus and go to the elevator and PLEASE DO NOT ENTER MUTILLA LAB BY THE FAST TRAVEL IF YOU DIDN'T UNLOCKED IT)
 
 ## Install the mod
 
@@ -44,6 +45,7 @@ Well I didn't test in another PC so I can't really be sure that it will work on 
 - Manage archipelago deconnection
 - Add archipelago data to the savefile to play offline
 - More user friendly configuration
+- Remove mutilla lab from the Fast Travel menu if not unlocked
 
 - SHOPS
 - Should allow to get out of the lab more freely, and make the bus free
@@ -54,6 +56,8 @@ Well I didn't test in another PC so I can't really be sure that it will work on 
 - Transition randomizer
 - Show message that shows obtained items during a skip
 - Bufferize the items allowing to play offline and send check when offline
+
+- Handle the briff kidnapping in a better way
 
 Dev only
 

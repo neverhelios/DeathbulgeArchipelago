@@ -144,6 +144,19 @@ public class DialogueCatcher : MonoBehaviour
                 WarpManager.CustomPrimeWarp("Way-BriffHide");
             }
 
+            if (entry.conversationID == 427 && entry.id == 109)
+            {
+                Plugin.Logger.LogInfo($"____________________ FORCES THE BUS TO BE USABLE EARLY FROM HOHO ____________________");
+                ForceLink(__instance, 427, 111, npcResponses, pcResponses, visited);
+                return false;
+            }
+
+            if (entry.conversationID == 770 && entry.id == 18)
+            {
+                Plugin.Logger.LogInfo($"____________________ FORCES THE BUS TO BE FREE ____________________");
+                ForceLink(__instance, 770, 19, npcResponses, pcResponses, visited);
+                return false;
+            }
 
             if (Plugin.logDialogueConfig.Value)
             {
