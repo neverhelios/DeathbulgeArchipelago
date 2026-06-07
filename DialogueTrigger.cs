@@ -28,9 +28,9 @@ public class DialogueCatcher : MonoBehaviour
         if (Plugin.logWarpConfig.Value)
         {
             Plugin.Logger.LogInfo($"Je me prime le warp");
+            Plugin.Logger.LogInfo($"-> WarpDestinationArea: {DialogueLua.GetVariable("WarpDestinationArea").AsString}");
             Plugin.Logger.LogInfo($"-> WarpDestinationMap: {DialogueLua.GetVariable("Common.WarpDestinationMap").AsString}");
             Plugin.Logger.LogInfo($"-> WarpDestinationObject: {DialogueLua.GetVariable("Common.WarpDestinationObject").AsString}");
-            Plugin.Logger.LogInfo($"-> WarpDestinationArea: {DialogueLua.GetVariable("WarpDestinationArea").AsString}");
             Plugin.Logger.LogInfo($"-> WarpChangeFacing: {DialogueLua.GetVariable("Common.WarpChangeFacing").AsString}");
             Plugin.Logger.LogInfo($"-> WarpFacing: {DialogueLua.GetVariable("Common.WarpFacing").AsString}");
             Plugin.Logger.LogInfo($"-> WarpIndoors: {DialogueLua.GetVariable("Common.WarpIndoors").AsString}");
@@ -103,52 +103,29 @@ public class DialogueCatcher : MonoBehaviour
         }
         if (bHasLinkPossible)
         {
-            // TODO: Make this waaaaay more clean
+            // TODO: Do only one if by subscribing to a force link dictionnary ad searching the entries here
             // Link manipulation
             if (entry.conversationID == 571 && entry.id == 4)
             {
                 Plugin.Logger.LogInfo($"____________________ I FORCE YOU YOU NOT SPEAK TO COALED ____________________");
-                DialogueEntry evaluatedDialogueEntry = ((DialogueDatabase)databaseFieldInfo.GetValue(__instance)).GetDialogueEntry(entry.outgoingLinks[0]);
-                Lua.Run(evaluatedDialogueEntry.userScript, DialogueDebug.logInfo, true);
-                evaluatedDialogueEntry.onExecute.Invoke();
-                for (int j = 4; j >= 0; j--)
-                {
-                    int num = npcResponses.Count + pcResponses.Count;
-                    evaluateLinksMethodInfo.Invoke(__instance, [(ConditionPriority)j, evaluatedDialogueEntry, npcResponses, pcResponses, visited, false]);
-
-                    if (npcResponses.Count + pcResponses.Count > num)
-                    {
-                        break;
-                    }
-                }
+                ForceLink(__instance, entry.outgoingLinks[0], npcResponses, pcResponses, visited);
                 return false;
             }
 
             if (entry.conversationID == 571 && entry.id == 10)
             {
                 Plugin.Logger.LogInfo($"____________________ GET OUT OF MY BUS ____________________");
-                // TODO: Create a function that allows to TP to every entrance
-                // Conv 268, Dialogue 107 allows to go at the bus station
-                Link tpOutofBusLink = new(entry.conversationID, entry.id, 455, 66);
+                WarpManager.CustomPrimeWarp("BopsteadBusStop");
+                ForceLink(__instance, 768, 1, npcResponses, pcResponses, visited);
+                return false;
+            }
 
-                DialogueEntry evaluatedDialogueEntry = ((DialogueDatabase)databaseFieldInfo.GetValue(__instance)).GetDialogueEntry(tpOutofBusLink);
-                Plugin.Logger.LogInfo($"== Sequence: {evaluatedDialogueEntry.Sequence} ==");
 
-                // evaluatedDialogueEntry.Sequence = "SendMessage(PrimeWarp,,Tonewood06-Exit02);";
-                superPrimeWarp();
-
-                Lua.Run(evaluatedDialogueEntry.userScript, DialogueDebug.logInfo, true);
-                evaluatedDialogueEntry.onExecute.Invoke();
-                for (int j = 4; j >= 0; j--)
-                {
-                    int num = npcResponses.Count + pcResponses.Count;
-                    evaluateLinksMethodInfo.Invoke(__instance, [(ConditionPriority)j, evaluatedDialogueEntry, npcResponses, pcResponses, visited, false]);
-
-                    if (npcResponses.Count + pcResponses.Count > num)
-                    {
-                        break;
-                    }
-                }
+            if (entry.conversationID == 578 && entry.id == 46)
+            {
+                // Skip link 38
+                Plugin.Logger.LogInfo($"____________________ DO NOT CLOSE THE BUS UPPER DOOR ____________________");
+                ForceLink(__instance, 578, 34, npcResponses, pcResponses, visited);
                 return false;
             }
 
@@ -182,31 +159,27 @@ public class DialogueCatcher : MonoBehaviour
         return true;
     }
 
-    static public void superPrimeWarp()
+    static private void ForceLink(ConversationModel __instance, int conversationID, int dialogueEntryId, List<Response> npcResponses, List<Response> pcResponses, List<DialogueEntry> visited)
     {
-        DialogueLua.SetVariable("Common.WarpDestinationMap", "Bopstead02");
-        DialogueLua.SetVariable("Common.WarpDestinationObject", "BusStopDestination");
-        DialogueLua.SetVariable("WarpDestinationArea", "Bopstead");
-        DialogueLua.SetVariable("Common.WarpChangeFacing", true);
-        DialogueLua.SetVariable("Common.WarpFacing", 1);
-        DialogueLua.SetVariable("Common.WarpIndoors", true);
-        DialogueLua.SetVariable("Common.WarpIndoorObject", "Bus Station");
-        DialogueLua.SetVariable("Common.WarpIndoorRoomObject", "Interior (Floor 0)");
-        DialogueLua.SetVariable("Common.WarpDestinationLayer", "Indoor");
-        DialogueLua.SetVariable("Common.WarpDestinationSortLayer", "IndoorObjects");
-        DialogueLua.SetVariable("Common.WarpFadeOut", true);
-        DialogueLua.SetVariable("Common.WarpAutosave", true);
-        DialogueLua.SetVariable("Common.LastWarpDestination", "Bopstead02@BusStopDestination");
-        CommonObjects.GetFieldMain().mapLoader.PreviousArea = "TheBus";
-        DialogueLua.SetVariable("Common.CurrentArea", "Bopstead");
-        DialogueLua.SetVariable("Common.CurrentMap", "Bopstead02");
-        // if (this.movePlayerTo != null)
-        // {
-        //     FieldPlayer fieldPlayer = CommonObjects.GetFieldPlayer();
-        //     Vector3 vector = this.movePlayerTo.position - fieldPlayer.transform.position;
-        //     fieldPlayer.entity.Move(vector, fieldPlayer.NormalSpeed);
-        // }
-        CommonObjects.GetFieldMain().skipButton.Clear();
+        Link tpOutofBusLink = new(0, 0, conversationID, dialogueEntryId);
+        ForceLink(__instance, tpOutofBusLink, npcResponses, pcResponses, visited);
+    }
+
+    static private void ForceLink(ConversationModel __instance, Link link, List<Response> npcResponses, List<Response> pcResponses, List<DialogueEntry> visited)
+    {
+        DialogueEntry evaluatedDialogueEntry = ((DialogueDatabase)databaseFieldInfo.GetValue(__instance)).GetDialogueEntry(link);
+        Lua.Run(evaluatedDialogueEntry.userScript, DialogueDebug.logInfo, true);
+        evaluatedDialogueEntry.onExecute.Invoke();
+        for (int j = 4; j >= 0; j--)
+        {
+            int num = npcResponses.Count + pcResponses.Count;
+            evaluateLinksMethodInfo.Invoke(__instance, [(ConditionPriority)j, evaluatedDialogueEntry, npcResponses, pcResponses, visited, false]);
+
+            if (npcResponses.Count + pcResponses.Count > num)
+            {
+                break;
+            }
+        }
     }
 
 }

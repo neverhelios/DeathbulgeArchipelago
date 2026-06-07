@@ -46,8 +46,7 @@ Well I didn't test in another PC so I can't really be sure that it will work on 
 - More user friendly configuration
 
 - SHOPS
-- Take into account the non linearity (Show some menus earlier, like key merch)
-- Should allow to get out of the bus and out of the lab more freely, and make the bus free
+- Should allow to get out of the lab more freely, and make the bus free
 - Claire bottle Sanity
 - Door Sanity
 - Beat Sanity
