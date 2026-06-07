@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Archipelago.MultiClient.Net.Models;
 
 
-namespace DeathbulgeArchipelagoClient;
+namespace DeathbulgeArchipelagoClient.DebugClasses;
 
 class SceneManagerLogger
 {

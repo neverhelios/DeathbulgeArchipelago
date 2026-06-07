@@ -3,6 +3,7 @@ using BepInEx.Logging;
 using BepInEx.Configuration;
 using UnityEngine.SceneManagement;
 using HarmonyLib;
+using DeathbulgeArchipelagoClient.DebugClasses;
 
 
 namespace DeathbulgeArchipelagoClient;

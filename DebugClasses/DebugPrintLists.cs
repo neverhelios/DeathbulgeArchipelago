@@ -7,7 +7,7 @@ using System.Text;
 using System.Reflection;
 using PixelCrushers.DialogueSystem;
 
-namespace DeathbulgeArchipelagoClient;
+namespace DeathbulgeArchipelagoClient.DebugClasses;
 
 
 class DebugPrintLists
@@ -62,25 +62,9 @@ class DebugPrintLists
 
         // --- CONVERSATIONS ---
         sb.AppendLine("\n---- CONVERSATIONS ----");
-        foreach (var convo in db.conversations)
+        foreach (var conv in db.conversations)
         {
-            sb.AppendLine($"Conversation: {convo.Title} (ID: {convo.id})");
-
-            foreach (var entry in convo.dialogueEntries)
-            {
-                sb.AppendLine($"  -- Entry ID: {entry.id} --");
-                sb.AppendLine($"    Subtitle Text: {entry.subtitleText}");
-                sb.AppendLine($"    Sequence: {entry.Sequence}");
-                sb.AppendLine($"    Lua: {entry.userScript}");
-                sb.AppendLine($"    Conditions: {entry.conditionsString}");
-                sb.AppendLine($"    False Cond Action: {entry.falseConditionAction}");
-                sb.AppendLine($"    Is Group: {entry.isGroup} | Is Root: {entry.isRoot}");
-                sb.AppendLine($"    Actor ID: {entry.ActorID}");
-                foreach (var link in entry.outgoingLinks)
-                {
-                    sb.AppendLine($"  Link: {link.originConversationID}|{link.originDialogueID} -> {link.destinationConversationID}|{link.destinationDialogueID}");
-                }
-            }
+            sb.Append(StringifyConversation(conv, "  "));
         }
 
         // --- ACTORS ---
@@ -105,6 +89,63 @@ class DebugPrintLists
         File.WriteAllText(path, sb.ToString());
 
         Plugin.Logger.LogInfo($"Database dump écrit ici: {path}");
+    }
+
+    public static void PrintConversation(Conversation conv, string prefix, bool separateLines)
+    {
+        string conversationString = StringifyConversation(conv, prefix);
+        if (!separateLines)
+        {
+            Plugin.Logger.LogInfo(conversationString);
+            return;
+        }
+
+        string[] conversationEntryLines = conversationString.Split("\n");
+        foreach (var line in conversationEntryLines)
+            Plugin.Logger.LogInfo(line);
+    }
+
+    public static string StringifyConversation(Conversation conv, string prefix)
+    {
+        var sb = new StringBuilder();
+        sb.AppendLine($"Conversation: {conv.Title} (ID: {conv.id})");
+        foreach (var entry in conv.dialogueEntries)
+        {
+            sb.Append(StringifyDialogueEntry(entry, prefix));
+        }
+        return sb.ToString();
+    }
+
+    public static void PrintDialogueEntry(DialogueEntry entry, string prefix, bool separateLines)
+    {
+        string dialogueEntryString = StringifyDialogueEntry(entry, prefix);
+        if (!separateLines)
+        {
+            Plugin.Logger.LogInfo(dialogueEntryString);
+            return;
+        }
+
+        string[] dialogueEntryLines = dialogueEntryString.Split("\n");
+        foreach (var line in dialogueEntryLines)
+            Plugin.Logger.LogInfo(line);
+    }
+
+    public static string StringifyDialogueEntry(DialogueEntry entry, string prefix)
+    {
+        var sb = new StringBuilder();
+        sb.AppendLine($"{prefix}-- Entry ID: {entry.id} --");
+        sb.AppendLine($"{prefix}  Subtitle Text: {entry.subtitleText}");
+        sb.AppendLine($"{prefix}  Sequence: {entry.Sequence}");
+        sb.AppendLine($"{prefix}  Lua: {entry.userScript}");
+        sb.AppendLine($"{prefix}  Conditions: {entry.conditionsString}");
+        sb.AppendLine($"{prefix}  False Cond Action: {entry.falseConditionAction}");
+        sb.AppendLine($"{prefix}  Is Group: {entry.isGroup} | Is Root: {entry.isRoot}");
+        sb.AppendLine($"{prefix}  Actor ID: {entry.ActorID}");
+        foreach (var link in entry.outgoingLinks)
+        {
+            sb.AppendLine($"{prefix}Link: {link.originConversationID}|{link.originDialogueID} -> {link.destinationConversationID}|{link.destinationDialogueID}");
+        }
+        return sb.ToString();
     }
 }
 
