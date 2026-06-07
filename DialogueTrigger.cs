@@ -1,6 +1,6 @@
+using DeathbulgeArchipelagoClient.Dialogues;
 using Field;
 using HarmonyLib;
-using Language.Lua;
 using PixelCrushers.DialogueSystem;
 using System.Collections.Generic;
 using System.Reflection;
@@ -43,6 +43,8 @@ public class DialogueCatcher : MonoBehaviour
             Plugin.Logger.LogInfo($"-> LastWarpDestination: {DialogueLua.GetVariable("Common.LastWarpDestination").AsString}");
             Plugin.Logger.LogInfo($"-> CurrentArea: {DialogueLua.GetVariable("Common.CurrentArea").AsString}");
             Plugin.Logger.LogInfo($"-> CurrentMap: {DialogueLua.GetVariable("Common.CurrentMap").AsString}");
+
+            Plugin.Logger.LogInfo($"{{\"{DialogueLua.GetVariable("Common.WarpDestinationObject").AsString}\", new(\"{DialogueLua.GetVariable("WarpDestinationArea").AsString}\", \"{DialogueLua.GetVariable("Common.WarpDestinationMap").AsString}\", \"{DialogueLua.GetVariable("Common.WarpDestinationObject").AsString}\", {DialogueLua.GetVariable("Common.WarpChangeFacing").AsString}, {DialogueLua.GetVariable("Common.WarpFacing").AsString}, {DialogueLua.GetVariable("Common.WarpIndoors").AsString}, \"{DialogueLua.GetVariable("Common.WarpIndoorObject").AsString}\", \"{DialogueLua.GetVariable("Common.WarpIndoorRoomObject").AsString}\", \"{DialogueLua.GetVariable("Common.WarpDestinationLayer").AsString}\", \"{DialogueLua.GetVariable("Common.WarpDestinationSortLayer").AsString}\", {DialogueLua.GetVariable("Common.WarpFadeOut").AsString}, {DialogueLua.GetVariable("Common.WarpAutosave").AsString}, \"{DialogueLua.GetVariable("WarpDestinationArea").AsString}\")}},");
             // CommonObjects.GetFieldMain().mapLoader.PreviousArea = DialogueLua.GetVariable("Common.CurrentArea").AsString;
         }
     }
@@ -129,6 +131,20 @@ public class DialogueCatcher : MonoBehaviour
                 return false;
             }
 
+            // ADD CHOICE THERE 630|5
+            if (entry.conversationID == 630 && entry.id == 5)
+            {
+                Plugin.Logger.LogInfo($"____________________ ADD ESCAPE CHOICE TO LOSER COUCH ____________________");
+                DialogueEntry evaluatedDialogueEntry = ((DialogueDatabase)databaseFieldInfo.GetValue(__instance)).GetDialogueEntry(DialogueDatabaseManager.GetModdedConvsBaseId() + 0, 0);
+                pcResponses.Add(new Response(FormattedText.Parse(evaluatedDialogueEntry.subtitleText, ((DialogueDatabase)databaseFieldInfo.GetValue(__instance)).emphasisSettings), evaluatedDialogueEntry, true));
+            }
+
+            if (entry.conversationID == DialogueDatabaseManager.GetModdedConvsBaseId() + 0 && entry.id == 0)
+            {
+                WarpManager.CustomPrimeWarp("Way-BriffHide");
+            }
+
+
             if (Plugin.logDialogueConfig.Value)
             {
                 Plugin.Logger.LogInfo($"");
@@ -182,27 +198,58 @@ public class DialogueCatcher : MonoBehaviour
         }
     }
 
-}
-
-// Legacy logger
-class DialogueTriggerLogger_Patch
-{
     [HarmonyPatch(typeof(DialogueSystemTrigger))]
     [HarmonyPatch("OnConversationStart")]
     [HarmonyPrefix]
     static void Prefix_ConvStart(Transform actor)
     {
+        if (Plugin.logLuaConditionsInterceptedConfig.Value)
+            if (actor)
+                Plugin.Logger.LogInfo($"Conversation starts on {actor.gameObject}");
+    }
+
+    [HarmonyPatch(typeof(DialogueSystemTrigger))]
+    [HarmonyPatch("TryStart", [typeof(Transform)])]
+    [HarmonyPrefix]
+    static void Prefix_TryStart(DialogueSystemTrigger __instance, Transform actor)
+    {
+
         if (actor)
-            Plugin.Logger.LogInfo($"Conversation starts on {actor.gameObject}");
+        {
+            string instancePath = Utils.GetHierarchyPath(__instance.transform);
+            if (Plugin.logLuaConditionsInterceptedConfig.Value)
+            {
+                string actorPath = Utils.GetHierarchyPath(actor.transform);
+                Plugin.Logger.LogInfo($"Try start on {actorPath}");
+                Plugin.Logger.LogInfo($"By {instancePath}");
+                foreach (var condition in __instance.condition.luaConditions)
+                    Plugin.Logger.LogInfo($"Conditions: {condition}");
+            }
+
+            if (instancePath == "MapRoot/MapGraphics/SaevaTent/SaevaTent-Exterior/Entrance")
+            {
+                // Remove the briff knocked out condition
+                __instance.condition.luaConditions = ["Variable[\"Hoho.BriffTentPrimed\"] == false"];
+            }
+        }
     }
 
     [HarmonyPatch(typeof(DialogueSystemTrigger))]
     [HarmonyPatch("Fire")]
     [HarmonyPrefix]
-    static void Prefix_Fire(Transform actor)
+    static void Prefix_Fire(DialogueSystemTrigger __instance, Transform actor)
     {
-        if (actor)
-            Plugin.Logger.LogInfo($"Fire event on {actor.gameObject}");
+        if (Plugin.logLuaConditionsInterceptedConfig.Value)
+        {
+            if (actor)
+            {
+                string actorPath = Utils.GetHierarchyPath(actor.transform);
+                Plugin.Logger.LogInfo($"Fire event on {actorPath}");
+                foreach (var condition in __instance.condition.luaConditions)
+                    Plugin.Logger.LogInfo($"Conditions: {condition}");
+            }
+        }
+
     }
 
     [HarmonyPatch(typeof(DialogueSystemTrigger))]
@@ -210,8 +257,9 @@ class DialogueTriggerLogger_Patch
     [HarmonyPrefix]
     static void Prefix_Use_Transform(Transform actor)
     {
-        if (actor)
-            Plugin.Logger.LogInfo($"On use on {actor.gameObject}");
+        if (Plugin.logLuaConditionsInterceptedConfig.Value)
+            if (actor)
+                Plugin.Logger.LogInfo($"On use on {actor.gameObject}");
     }
 
     [HarmonyPatch(typeof(DialogueSystemTrigger))]
@@ -219,10 +267,15 @@ class DialogueTriggerLogger_Patch
     [HarmonyPrefix]
     static void Prefix_Use_Str(string message)
     {
-        Plugin.Logger.LogInfo($"On use with message {message}");
+        if (Plugin.logLuaConditionsInterceptedConfig.Value)
+            Plugin.Logger.LogInfo($"On use with message {message}");
     }
 
+}
 
+// Legacy logger
+class DialogueTriggerLogger_Patch
+{
     [HarmonyPatch(typeof(DialogueManager))]
     [HarmonyPatch("StartConversation", [typeof(string), typeof(int), typeof(List<Transform>), typeof(Transform)])]
     [HarmonyPrefix]

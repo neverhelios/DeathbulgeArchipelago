@@ -3,6 +3,7 @@ using BepInEx.Logging;
 using BepInEx.Configuration;
 using UnityEngine.SceneManagement;
 using HarmonyLib;
+using DeathbulgeArchipelagoClient.Dialogues;
 using DeathbulgeArchipelagoClient.DebugClasses;
 
 
@@ -17,6 +18,7 @@ public class Plugin : BaseUnityPlugin
     internal static ConfigEntry<bool> logDialogueConfig;
     private static ConfigEntry<bool> legacyLogDialogueConfig;
     private static ConfigEntry<bool> logLuaShortcutsConfig;
+    internal static ConfigEntry<bool> logLuaConditionsInterceptedConfig;
     internal static ConfigEntry<bool> logLuaCommmandsInterceptedConfig;
 
     private static ConfigEntry<bool> enableCheatsConfig;
@@ -40,7 +42,8 @@ public class Plugin : BaseUnityPlugin
         logDialogueConfig = Config.Bind("Debug.Logging", "LogDialogue", true, "For developpement purposes");
         legacyLogDialogueConfig = Config.Bind("Debug.Logging", "LegacyLogDialogue", true, "For developpement purposes");
         logLuaShortcutsConfig = Config.Bind("Debug.Logging", "LogLuaShortcuts", true, "For developpement purposes");
-        logLuaCommmandsInterceptedConfig = Config.Bind("Debug.Logging", "LogLuaCommandsIntecepted", true, "For developpement purposes");
+        logLuaConditionsInterceptedConfig = Config.Bind("Debug.Logging", "LogLuaConditionsIntercepted", true, "For developpement purposes");
+        logLuaCommmandsInterceptedConfig = Config.Bind("Debug.Logging", "LogLuaCommandsIntercepted", true, "For developpement purposes");
 
         enableCheatsConfig = Config.Bind("Debug.Cheat", "Enable", true, "Enable cheats (For debugging right ?)");
         fullStatsConfig = Config.Bind("Debug.Cheat", "FullStats", true, "All Stats at maximum for fast fights");
@@ -78,6 +81,7 @@ public class Plugin : BaseUnityPlugin
         Harmony.CreateAndPatchAll(typeof(ItemsBehavior_Patch));
         Harmony.CreateAndPatchAll(typeof(DialogueCatcher));
         Harmony.CreateAndPatchAll(typeof(PlacedItemCatcher));
+        Harmony.CreateAndPatchAll(typeof(DialogueDatabaseManager));
 
 
         // StartCoroutine(DebugPrintLists.DumpDatabaseWhenReady());

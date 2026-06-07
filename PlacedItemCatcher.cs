@@ -14,7 +14,12 @@ public class PlacedItemCatcher : MonoBehaviour
     static bool CatchPersistentActiveDataCheck(PersistentActiveData __instance)
     {
         string instancePath = Utils.GetHierarchyPath(__instance.transform);
-        // Plugin.Logger.LogInfo($"Persistent data of {instancePath}");
+        if (Plugin.logLuaConditionsInterceptedConfig.Value)
+        {
+            Plugin.Logger.LogInfo($"Persistent data of {instancePath}");
+            foreach (var condition in __instance.condition.luaConditions)
+                Plugin.Logger.LogInfo($"Conditions: {condition}");
+        }
         if (instancePath == "MapRoot/MapGraphics/LowerDecks/Interior (Floor 3-1)/Fancydoor-Controller")
         {
             __instance.target.SetActive(false);

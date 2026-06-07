@@ -9,8 +9,8 @@ Work VERY in progress, this repo will contain only the Archipelago client, the a
 ## Changes with the base game and limitations
 
 - You can leave the bus whenever you want (well at some point you will need to do some OOB but fuck it I'll fix it later)
-
-- Shortly, you will be able to teleport to bopstead from anywhere, and go back to hoho from the lab
+- You can leave the lab by the loser couch (well it breaks some portraits but you just need to return to main menu to do this)
+- Shortly, you will be able to teleport to bopstead from anywhere
 
 ## Install the mod
 
@@ -61,11 +61,19 @@ Dev only
 - Create a function for displaying dialogue entry in the console more easily
 - Create a dictionary (key is tuple convID & entryID) that allow change the dialogues texts in O(1) instead of ifs
 - Find a way to add completely new conversations so I can just send links to these new convs
+- Custscenes autoskipper for faster debug ?
 
 ## Known Issues:
 
+### Major
+
+- You need to OOB your way out of the bus (At least you can go out of the bus lol)
 - Double proc for the Spiky Silver Thing because the location check is received too early, maybe have a global variable that avoid to to show an item if a dialogue is started and not finished
 - Money will be given every time you connect, enjoy :)
 - The sampler tuto is broken lol, it only sets you the beats you already have, and changes your class only if you have found it
-- Well maybe the `[Key Merch] 16th Deck Keycard` doesn't work to the softlock doesn't exist looooooooool
 - If you take All claire's bottle in one go it gives you one check, but if to take it step by step it gives you two other checks that are mutually exclusive with the fist one xD I'll try to give everything at the end of the quest anyway
+- When returning to Hoho from the lab, portrait pictures may be broken. If so, just save, return to main menu and reload your save
+
+### Minor
+
+- Kidnapping happens even after beating Mutilla
