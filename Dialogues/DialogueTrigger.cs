@@ -7,7 +7,7 @@ using System.Reflection;
 using UnityEngine;
 
 
-namespace DeathbulgeArchipelagoClient;
+namespace DeathbulgeArchipelagoClient.Dialogues;
 
 public class DialogueCatcher : MonoBehaviour
 {
