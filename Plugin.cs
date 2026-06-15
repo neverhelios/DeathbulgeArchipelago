@@ -81,7 +81,7 @@ public class Plugin : BaseUnityPlugin
         Harmony.CreateAndPatchAll(typeof(TreasureManager));
         Harmony.CreateAndPatchAll(typeof(ItemsBehavior_Patch));
         Harmony.CreateAndPatchAll(typeof(DialogueCatcher));
-        Harmony.CreateAndPatchAll(typeof(PlacedItemCatcher));
+        Harmony.CreateAndPatchAll(typeof(PlacedMapObjectCatcher));
         Harmony.CreateAndPatchAll(typeof(DialogueDatabaseManager));
 
 

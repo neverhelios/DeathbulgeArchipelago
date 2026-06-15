@@ -1,12 +1,11 @@
-using DeathbulgeArchipelagoClient;
 using HarmonyLib;
 using PixelCrushers.DialogueSystem;
 using UnityEngine;
 
 
-namespace DeathbulgeArchipelagoClient.ItemsManagement;
+namespace DeathbulgeArchipelagoClient;
 
-public class PlacedItemCatcher : MonoBehaviour
+public class PlacedMapObjectCatcher : MonoBehaviour
 {
     [HarmonyPatch(typeof(PersistentActiveData))]
     [HarmonyPatch("Check")]
