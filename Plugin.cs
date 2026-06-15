@@ -5,6 +5,7 @@ using UnityEngine.SceneManagement;
 using HarmonyLib;
 using DeathbulgeArchipelagoClient.Dialogues;
 using DeathbulgeArchipelagoClient.DebugClasses;
+using DeathbulgeArchipelagoClient.ItemsManagement;
 
 
 namespace DeathbulgeArchipelagoClient;

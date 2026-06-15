@@ -6,7 +6,7 @@ using Field;
 using PixelCrushers.DialogueSystem;
 using UnityEngine.SceneManagement;
 
-namespace DeathbulgeArchipelagoClient;
+namespace DeathbulgeArchipelagoClient.ItemsManagement;
 
 class ItemDispatcher
 {

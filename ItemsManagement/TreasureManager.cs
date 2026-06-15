@@ -14,7 +14,7 @@ using PixelCrushers.DialogueSystem;
 using PixelCrushers.DialogueSystem.SequencerCommands;
 using UnityEngine;
 
-namespace DeathbulgeArchipelagoClient;
+namespace DeathbulgeArchipelagoClient.ItemsManagement;
 
 class TreasureManager
 {

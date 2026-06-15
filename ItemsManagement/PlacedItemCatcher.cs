@@ -4,7 +4,7 @@ using PixelCrushers.DialogueSystem;
 using UnityEngine;
 
 
-namespace DeathbulgeArchipelagoClient;
+namespace DeathbulgeArchipelagoClient.ItemsManagement;
 
 public class PlacedItemCatcher : MonoBehaviour
 {

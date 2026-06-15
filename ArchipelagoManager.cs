@@ -4,11 +4,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using Archipelago.MultiClient.Net;
 using Archipelago.MultiClient.Net.Enums;
-using Archipelago.MultiClient.Net.Helpers;
 using Archipelago.MultiClient.Net.Models;
-using Field;
-using PixelCrushers.DialogueSystem;
 using UnityEngine;
+using DeathbulgeArchipelagoClient.ItemsManagement;
 
 namespace DeathbulgeArchipelagoClient;
 

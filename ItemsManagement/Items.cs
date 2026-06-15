@@ -6,7 +6,8 @@ using HarmonyLib;
 using Field;
 using PixelCrushers.DialogueSystem;
 using Core;
-using DeathbulgeArchipelagoClient;
+
+namespace DeathbulgeArchipelagoClient.ItemsManagement;
 
 class LocatedItem
 {

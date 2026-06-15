@@ -2,6 +2,7 @@ using Archipelago.MultiClient.Net.Helpers;
 using Core;
 using HarmonyLib;
 using PixelCrushers.DialogueSystem;
+using DeathbulgeArchipelagoClient.ItemsManagement;
 
 namespace DeathbulgeArchipelagoClient;
 
