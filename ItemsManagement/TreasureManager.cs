@@ -18,26 +18,6 @@ namespace DeathbulgeArchipelagoClient.ItemsManagement;
 
 class TreasureManager
 {
-    public static string SendCheckAndGetItem(string locationString, bool only_check = false)
-    {
-        ArchipelagoManager.instance.currSession?.Locations?.CompleteLocationChecks(ArchipelagoManager.instance.currSession?.Locations?.GetLocationIdFromName("Deathbulge", locationString) ?? -1);
-
-        if (only_check)
-            return "";
-
-        if (ArchipelagoManager.instance.IsLocalLocation(locationString))
-        {
-            string itemName = ArchipelagoManager.instance.GetLocationItem(locationString);
-            string treasureName = Items.GetTreasureFromItemName(itemName);
-            Plugin.Logger.LogInfo($"======= The treasure get will should be {locationString} but it will be {treasureName}");
-            return treasureName;
-        }
-        else
-        {
-            Plugin.Logger.LogInfo($"On va t'archipelaguer à coup de Archipelago Item - {locationString}");
-            return $"Archipelago Item - {locationString}";
-        }
-    }
 
     // Send checks for classic treasures
     [HarmonyPatch(typeof(DialogueLua))]
@@ -55,7 +35,7 @@ class TreasureManager
             }
 
             string locationString = LuaInterpreterExtensions.ObjectToLuaValue(value).ToString();
-            luaTable.SetNameValue(DialogueLua.StringToTableIndex(variable), new LuaString(SendCheckAndGetItem(locationString)));
+            luaTable.SetNameValue(DialogueLua.StringToTableIndex(variable), new LuaString(Items.SendCheckAndGetItem(locationString)));
             return false;
         }
         return true;
@@ -114,7 +94,7 @@ class TreasureManager
             if (locationString == "NO LOCATION")
                 continue;
 
-            SendCheckAndGetItem(locationString, true);
+            Items.SendCheckAndGetItem(locationString, true);
             string itemName = ArchipelagoManager.instance.GetLocationItem(locationString);
 
             Plugin.Logger.LogInfo($"\n\n\n+++++++++++++++ The beat drop name is {beatName}, so treasure {locationString} and will be replaced by {itemName} ++++++++++++++++++++\n\n\n");

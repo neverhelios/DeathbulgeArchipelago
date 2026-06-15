@@ -51,7 +51,7 @@ class LuaCatcher
                 {
                     string locationString = lines[i].Split('"')[3];
 
-                    lines[i] = $"Variable[\"Treasure.CurrentFlag\"] = \"{TreasureManager.SendCheckAndGetItem(locationString)}\"";
+                    lines[i] = $"Variable[\"Treasure.CurrentFlag\"] = \"{Items.SendCheckAndGetItem(locationString)}\"";
 
                     ILocationCheckHelper locations = ArchipelagoManager.instance.currSession?.Locations;
                     if (locations == null) continue;

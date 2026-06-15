@@ -207,6 +207,27 @@ class Items
         { "Treasure Money(5)", "Bopstead01Treasure03"},
     };
 
+    public static string SendCheckAndGetItem(string locationString, bool only_check = false)
+    {
+        ArchipelagoManager.instance.currSession?.Locations?.CompleteLocationChecks(ArchipelagoManager.instance.currSession?.Locations?.GetLocationIdFromName("Deathbulge", locationString) ?? -1);
+
+        if (only_check)
+            return "";
+
+        if (ArchipelagoManager.instance.IsLocalLocation(locationString))
+        {
+            string itemName = ArchipelagoManager.instance.GetLocationItem(locationString);
+            string treasureName = Items.GetTreasureFromItemName(itemName);
+            Plugin.Logger.LogInfo($"======= The treasure get will should be {locationString} but it will be {treasureName}");
+            return treasureName;
+        }
+        else
+        {
+            Plugin.Logger.LogInfo($"On va t'archipelaguer à coup de Archipelago Item - {locationString}");
+            return $"Archipelago Item - {locationString}";
+        }
+    }
+
 }
 
 // Make key items great again
