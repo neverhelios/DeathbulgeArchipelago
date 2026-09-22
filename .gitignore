@@ -363,3 +363,6 @@ MigrationBackup/
 FodyWeavers.xsd
 
 *.lscache
+
+# Machine-specific game install path (see Directory.Build.props.example)
+Directory.Build.props
