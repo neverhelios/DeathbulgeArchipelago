@@ -56,7 +56,7 @@ class ItemDispatcher
                 {
                     ItemInfo itemReceived = itemsToDispatch.Dequeue();
                     // TODO: Special treatement for external money
-                    Item item = DialogueManager.MasterDatabase.GetItem(Items.GetTreasureFromItemName(itemReceived.ItemName));
+                    Item item = DialogueManager.MasterDatabase.GetItem(Items.GetLocationFromItemName(itemReceived.ItemName));
                     Item slot = DialogueManager.MasterDatabase.GetSlot(item, "TreasureSlot");
                     if (slot != null)
                     {
@@ -67,6 +67,12 @@ class ItemDispatcher
                     }
                     else
                     {
+                        if (Items.IsShopItem(item.Name))
+                        {
+                            CoreHelper.AddItem(item);
+                            // TODO: Popup on getting shop item
+                            // TreasureManager.ShowTreasurePopup(item.Name, )
+                        }
                         // TODO: Special treatement for external money
                         Plugin.Logger.LogInfo($"Argent, argent, argent");
                         treasureUI.Show(item);

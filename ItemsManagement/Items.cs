@@ -55,9 +55,19 @@ class Items
         return itemToTreasureNames;
     }
 
-    public static string GetTreasureFromItemName(string itemName)
+    public static string GetLocationFromItemName(string itemName)
     {
+        if (IsShopItem(itemName))
+        {
+            return itemName + " Shop Item";
+        }
+
         return itemToTreasureNames.GetValueOrDefault(itemName, "NO LOCATION");
+    }
+
+    public static bool IsShopItem(string itemName)
+    {
+        return shopItemsList.Contains(itemName);
     }
 
     public static int CountAllPrizeTicketsGot()
@@ -190,7 +200,121 @@ class Items
         {"Treasure Money", "[Treasure] FoggyRewardMoney"},
     };
 
+    static readonly List<string> shopItemsList = [
+"[Patch] 2-STOKED",
+"[Patch] Power Wizard",
+"[Patch] The Vroom Vrooms",
+// "[Patch] Bassist's Patch", (Unused ?)
+"[Patch] Freebees",
+"[Patch] Kurtical Hit",
+"[Patch] Levelle",
+"[Patch] Major Droppage",
+"[Patch] Rainbow Sunshine Treehouse Band",
+"[Mod] A.S.M.R.",
+"[Mod] Therapeutic Thump",
+"[Mod] Aggressive Rejuvenation",
+"[Mod] Basketball",
+"[Mod] Arhythmic Assault",
+"[Mod] Sinner's Breakdown",
+"[Mod] Pulse of the Possessed",
+"[Mod] 666 Horsepower",
+"[Mod] Skullsplitter",
+"[Mod] Dead Inside",
+"[Mod] Make it Worse",
+"[Mod] Summer Jam",
+"[Mod] Offensive and Defensive",
+"[Mod] Shredded Shred",
+"[Mod] REMIX Faye",
+"[Mod] Amplosion",
+"[Mod] Slap of Protection",
+"[Mod] Hammer Jamming",
+"[Mod] Cursed Slap",
+"[Mod] Poppin' Off",
+"[Mod] Hot Take",
+"[Mod] Flashy Flex",
+"[Mod] A Tribute to Babby",
+"[Mod] REMIX Ian",
+"[Merch] Hearty Barry's",
+"[Merch] SIDD X",
+"[Merch] SIDD X2",
+"[Merch] Bountiful Barry's",
+"[Merch] Quakstak Burgermuffs",
+"[Merch] Positive Pull-string Pal",
+"[Merch] Negative Pull-string Pal",
+"[Merch] Hair Dryer",
+"[Merch] White Noise Machine",
+// "[Merch] SIDD N' BARRY'S Classic", (Unused ?)
+// "[Merch] Flyer", (Unused ?)
+"[Key Merch] Demonic Sewing Kit",
+"[Stock] Increase 1 (Keef's Shop)",
+"[Stock] Increase 1 (Keef's Shop02)",
+"[Stock] Increase 1 (Eezer's Shop)",
+"[Stock] Increase 1 (PopUp Shop)",];
 
+
+    static readonly List<string> upgradedBeatsList = [
+"[Beat] Shrubbash II",
+"[Beat] Shrubbash III",
+"[Beat] Toot II",
+"[Beat] Toot III",
+"[Beat] Venom Blast II",
+"[Beat] Venom Blast III",
+"[Beat] Slick Lick II",
+"[Beat] Slick Lick III",
+"[Beat] Strong Tone II",
+"[Beat] Strong Tone III",
+"[Beat] Simple Snare II",
+"[Beat] Simple Snare III",
+"[Beat] Rinna II",
+"[Beat] Rinna III",
+"[Beat] RH II",
+"[Beat] RH III",
+"[Beat] Boomtime Vol. II",
+"[Beat] Boomtime Vol. III",
+"[Beat] Absolute Belter",
+"[Beat] Bellowing Blast II",
+"[Beat] Bellowing Blast III",
+"[Beat] Sick Flip II",
+"[Beat] Sick Flip III",
+"[Beat] Dad-dance II",
+"[Beat] Dad-dance III",
+"[Beat] Bagparp II",
+"[Beat] Bagparp III",
+"[Beat] Chonk II",
+"[Beat] Chonk III",
+"[Beat] Splutter II",
+"[Beat] Splutter III",
+"[Beat] Harpleech II",
+"[Beat] Harpleech III",
+"[Beat] Partyhearty II",
+"[Beat] Partyhearty III",
+"[Beat] Shadowscream II",
+"[Beat] Shadowscream III",
+"[Beat] Twinklethump II",
+"[Beat] Twinklethump III",
+"[Beat] Pedaldrive II",
+"[Beat] Pedaldrive III",
+"[Beat] Shrubbuff II",
+"[Beat] Shrubbuff III",
+"[Beat] Tingtude II",
+"[Beat] Tingtude III",
+"[Beat] Tootimatum II",
+"[Beat] Tootimatum III",
+"[Beat] Rattack II",
+"[Beat] Rattack III",
+"[Beat] Belch II",
+"[Beat] Belch III",
+"[Beat] Demon Slam II",
+"[Beat] Demon Slam III",
+"[Beat] The Power of Fiendship II",
+"[Beat] The Power of Fiendship III",
+"[Beat] The Quench II",
+"[Beat] The Quench III",
+"[Beat] BOOHISS II",
+"[Beat] BOOHISS III",
+"[Beat] Ghoulstump II",
+"[Beat] Ghoulstump III",
+];
     static readonly Dictionary<string, string> moneyToTreasureNames = new()
     {
         {"Treasure Money(8181)", "Tonewood08Treasure04"},
@@ -217,7 +341,7 @@ class Items
         if (ArchipelagoManager.instance.IsLocalLocation(locationString))
         {
             string itemName = ArchipelagoManager.instance.GetLocationItem(locationString);
-            string treasureName = Items.GetTreasureFromItemName(itemName);
+            string treasureName = Items.GetLocationFromItemName(itemName);
             Plugin.Logger.LogInfo($"======= The treasure get will should be {locationString} but it will be {treasureName}");
             return treasureName;
         }

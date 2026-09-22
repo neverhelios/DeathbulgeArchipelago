@@ -61,7 +61,7 @@ class LuaCatcher
                     if (ArchipelagoManager.instance.IsLocalLocation(locationString))
                     {
                         string itemName = ArchipelagoManager.instance.GetLocationItem(locationString);
-                        string treasureName = Items.GetTreasureFromItemName(itemName);
+                        string treasureName = Items.GetLocationFromItemName(itemName);
                         Plugin.Logger.LogInfo($"======= The treasure get will should be {locationString} but it will be {treasureName}");
                         lines[i] = $"Variable[\"Treasure.CurrentFlag\"] = \"{treasureName}\"";
                     }
@@ -92,7 +92,7 @@ class LuaCatcher
                 {
                     string itemName = $"[Key Merch] Old Prize Draw Ticket {match.Groups[1].Value}";
 
-                    string locationString = Items.GetTreasureFromItemName(itemName);
+                    string locationString = Items.GetLocationFromItemName(itemName);
 
                     ILocationCheckHelper locations = ArchipelagoManager.instance.currSession?.Locations;
                     if (locations == null) return match.Value;

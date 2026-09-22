@@ -49,7 +49,7 @@ class TreasureManager
     {
 
         string beatName = LuaInterpreterExtensions.ObjectToLuaValue(baseBeat.Name).ToString();
-        string locationString = Items.GetTreasureFromItemName(beatName);
+        string locationString = Items.GetLocationFromItemName(beatName);
 
         // Not currently handled beat drop so let the function continue
         if (locationString == "NO LOCATION")
@@ -88,7 +88,7 @@ class TreasureManager
         for (int i = beats.Count - 1; i >= 0; i--)
         {
             string beatName = LuaInterpreterExtensions.ObjectToLuaValue(beats[i].Name).ToString();
-            string locationString = Items.GetTreasureFromItemName(beatName);
+            string locationString = Items.GetLocationFromItemName(beatName);
 
             // Not currently handled beat drop
             if (locationString == "NO LOCATION")

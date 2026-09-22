@@ -39,12 +39,29 @@ class DebugPrintLists
         while (DialogueManager.MasterDatabase == null)
             yield return null;
 
-        if (dumped) yield break;
-        dumped = true;
-
         var db = DialogueManager.MasterDatabase;
 
         var sb = new StringBuilder();
+
+        sb.AppendLine("===== DIALOGUE DATABASE DUMP =====");
+
+        // --- ITEMS ---
+        sb.AppendLine("\n---- ITEMS ----");
+        foreach (var item in db.items)
+        {
+            if (item.FieldExists("Price") && item.LookupInt("Price") != 0)
+                sb.AppendLine($"Item: {item.Name} (Price: {item.LookupInt("Price")})");
+
+        }
+
+        Plugin.Logger.LogInfo($"Items Shoppable: \n{sb.ToString()}");
+
+        if (dumped) yield break;
+        dumped = true;
+
+        // var db = DialogueManager.MasterDatabase;
+
+        // var sb = new StringBuilder();
 
         sb.AppendLine("===== DIALOGUE DATABASE DUMP =====");
 

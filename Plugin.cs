@@ -78,6 +78,7 @@ public class Plugin : BaseUnityPlugin
         SceneManager.sceneUnloaded += ItemDispatcher.OnSceneUnloaded;
 
         Harmony.CreateAndPatchAll(typeof(LuaCatcher));
+        Harmony.CreateAndPatchAll(typeof(ShopManager));
         Harmony.CreateAndPatchAll(typeof(TreasureManager));
         Harmony.CreateAndPatchAll(typeof(ItemsBehavior_Patch));
         Harmony.CreateAndPatchAll(typeof(DialogueCatcher));
@@ -85,7 +86,7 @@ public class Plugin : BaseUnityPlugin
         Harmony.CreateAndPatchAll(typeof(DialogueDatabaseManager));
 
 
-        // StartCoroutine(DebugPrintLists.DumpDatabaseWhenReady());
+        StartCoroutine(DebugPrintLists.DumpDatabaseWhenReady());
 
         Logger.LogInfo($"Plugin {MyPluginInfo.PLUGIN_GUID} has finished patching!");
     }

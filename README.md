@@ -65,6 +65,7 @@ Dev only
 - Create a function for displaying dialogue entry in the console more easily
 - Create a dictionary (key is tuple convID & entryID) that allow change the dialogues texts in O(1) instead of ifs
 - Find a way to add completely new conversations so I can just send links to these new convs
+- To add an item, do not just use `CoreHelper.AddItem`, create a wrapper
 - Custscenes autoskipper for faster debug ?
 
 ## Known Issues:
