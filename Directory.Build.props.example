@@ -1,0 +1,5 @@
+<Project>
+  <PropertyGroup>
+    <GamePath>C:\Path\To\Deathbulge Battle of the Bands</GamePath>
+  </PropertyGroup>
+</Project>

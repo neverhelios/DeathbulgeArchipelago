@@ -37,6 +37,8 @@ Btw you need to launch the archipelago BEFORE the client and if you deconnect, n
 
 ## Building at home
 
+At first, you need to copy `Directory.Build.props.example` to `Directory.Build.props` and set `GamePath` to your base folder.
+
 Well I didn't test in another PC so I can't really be sure that it will work on your machine , I'll update it when I have the motivation (or if someone wants it, neverhelios on discord)
 
 ## TODO:
