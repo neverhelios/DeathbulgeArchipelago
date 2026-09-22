@@ -124,7 +124,7 @@ class WarpManager
         DialogueLua.SetVariable("Common.WarpFadeOut", warpDestination.warpFadeOut);
         DialogueLua.SetVariable("Common.WarpAutosave", warpDestination.warpAutosave);
         DialogueLua.SetVariable("Common.LastWarpDestination", $"{warpDestination.warpDestinationMap}@{warpDestination.warpDestinationObject}");
-        CommonObjects.GetFieldMain().mapLoader.PreviousArea = warpDestination.warpPreviousArea;
+        CommonObjects.GetGlobal().mapLoader.PreviousArea = warpDestination.warpPreviousArea;
         DialogueLua.SetVariable("Common.CurrentArea", warpDestination.warpDestinationArea);
         DialogueLua.SetVariable("Common.CurrentMap", warpDestination.warpDestinationMap);
         CommonObjects.GetFieldMain().skipButton.Clear();

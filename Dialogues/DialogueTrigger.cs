@@ -136,7 +136,7 @@ public class DialogueCatcher : MonoBehaviour
             {
                 Plugin.Logger.LogInfo($"____________________ ADD ESCAPE CHOICE TO LOSER COUCH ____________________");
                 DialogueEntry evaluatedDialogueEntry = ((DialogueDatabase)databaseFieldInfo.GetValue(__instance)).GetDialogueEntry(DialogueDatabaseManager.GetModdedConvsBaseId() + 0, 0);
-                pcResponses.Add(new Response(FormattedText.Parse(evaluatedDialogueEntry.subtitleText, ((DialogueDatabase)databaseFieldInfo.GetValue(__instance)).emphasisSettings), evaluatedDialogueEntry, true));
+                pcResponses.Add(new Response(FormattedText.Parse(evaluatedDialogueEntry.subtitleText), evaluatedDialogueEntry, true));
             }
 
             if (entry.conversationID == DialogueDatabaseManager.GetModdedConvsBaseId() + 0 && entry.id == 0)
