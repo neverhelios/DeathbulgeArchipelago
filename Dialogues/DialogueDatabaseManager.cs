@@ -32,7 +32,7 @@ class DialogueDatabaseManager
         getOutOfLabConv.id = GetHighestAvailableConversationID(__instance);
 
         getOutOfLabConv.dialogueEntries.Add(CreateDialogueEntry(__instance, 630, 6, getOutOfLabConv.id, 0, "NO ! LET ME GET THE FUCK OUT OF HERE", false, [new Link(getOutOfLabConv.id, 0, getOutOfLabConv.id, 1)]));
-        getOutOfLabConv.dialogueEntries.Add(CreateDialogueEntry(__instance, 630, 6, getOutOfLabConv.id, 1, "Hello World 2 le retour", true, [new Link(getOutOfLabConv.id, 1, 768, 1)]));
+        getOutOfLabConv.dialogueEntries.Add(CreateDialogueEntry(__instance, 630, 6, getOutOfLabConv.id, 1, "Hello World 2 le retour", true, [new Link(getOutOfLabConv.id, 1, 811, 1)]));
 
         listConversations.Add(getOutOfLabConv);
 

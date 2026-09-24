@@ -79,7 +79,7 @@ public class DialogueCatcher : MonoBehaviour
         }
 
         // Entry manipulation
-        if (subtitle.dialogueEntry.conversationID == 571 && subtitle.dialogueEntry.id == 10)
+        if (subtitle.dialogueEntry.conversationID == 573 && subtitle.dialogueEntry.id == 10)
         {
             subtitle.formattedText.text = "Well the door is open, why not get out of the bus ?";
         }
@@ -107,32 +107,32 @@ public class DialogueCatcher : MonoBehaviour
         {
             // TODO: Do only one if by subscribing to a force link dictionnary ad searching the entries here
             // Link manipulation
-            if (entry.conversationID == 571 && entry.id == 4)
+            if (entry.conversationID == 573 && entry.id == 4)
             {
                 Plugin.Logger.LogInfo($"____________________ I FORCE YOU YOU NOT SPEAK TO COALED ____________________");
                 ForceLink(__instance, entry.outgoingLinks[0], npcResponses, pcResponses, visited);
                 return false;
             }
 
-            if (entry.conversationID == 571 && entry.id == 10)
+            if (entry.conversationID == 573 && entry.id == 10)
             {
                 Plugin.Logger.LogInfo($"____________________ GET OUT OF MY BUS ____________________");
                 WarpManager.CustomPrimeWarp("BopsteadBusStop");
-                ForceLink(__instance, 768, 1, npcResponses, pcResponses, visited);
+                ForceLink(__instance, 811, 1, npcResponses, pcResponses, visited);
                 return false;
             }
 
 
-            if (entry.conversationID == 578 && entry.id == 46)
+            if (entry.conversationID == 580 && entry.id == 46)
             {
                 // Skip link 38
                 Plugin.Logger.LogInfo($"____________________ DO NOT CLOSE THE BUS UPPER DOOR ____________________");
-                ForceLink(__instance, 578, 34, npcResponses, pcResponses, visited);
+                ForceLink(__instance, 580, 34, npcResponses, pcResponses, visited);
                 return false;
             }
 
             // ADD CHOICE THERE 630|5
-            if (entry.conversationID == 630 && entry.id == 5)
+            if (entry.conversationID == 632 && entry.id == 5)
             {
                 Plugin.Logger.LogInfo($"____________________ ADD ESCAPE CHOICE TO LOSER COUCH ____________________");
                 DialogueEntry evaluatedDialogueEntry = ((DialogueDatabase)databaseFieldInfo.GetValue(__instance)).GetDialogueEntry(DialogueDatabaseManager.GetModdedConvsBaseId() + 0, 0);
@@ -144,17 +144,17 @@ public class DialogueCatcher : MonoBehaviour
                 WarpManager.CustomPrimeWarp("Way-BriffHide");
             }
 
-            if (entry.conversationID == 427 && entry.id == 109)
+            if (entry.conversationID == 427 && entry.id == 94)
             {
                 Plugin.Logger.LogInfo($"____________________ FORCES THE BUS TO BE USABLE EARLY FROM HOHO ____________________");
-                ForceLink(__instance, 427, 111, npcResponses, pcResponses, visited);
+                ForceLink(__instance, 427, 96, npcResponses, pcResponses, visited);
                 return false;
             }
 
-            if (entry.conversationID == 770 && entry.id == 18)
+            if (entry.conversationID == 813 && entry.id == 18)
             {
                 Plugin.Logger.LogInfo($"____________________ FORCES THE BUS TO BE FREE ____________________");
-                ForceLink(__instance, 770, 19, npcResponses, pcResponses, visited);
+                ForceLink(__instance, 813, 19, npcResponses, pcResponses, visited);
                 return false;
             }
 
