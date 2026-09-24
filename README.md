@@ -61,6 +61,8 @@ Well I didn't test in another PC so I can't really be sure that it will work on 
 
 - Handle the briff kidnapping in a better way
 
+- Reduce the time to skip the cutscenes
+
 Dev only
 
 - Use Conversation model for everything instead of lua.run
