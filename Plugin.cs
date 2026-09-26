@@ -38,17 +38,17 @@ public class Plugin : BaseUnityPlugin
         Logger = base.Logger;
         Logger.LogInfo($"Plugin {MyPluginInfo.PLUGIN_GUID} is loaded!");
 
-        logSceneLoadedConfig = Config.Bind("Debug.Logging", "LogScenesLoaded", true, "For developpement purposes");
-        logWarpConfig = Config.Bind("Debug.Logging", "LogWarp", true, "For developpement purposes");
-        logDialogueConfig = Config.Bind("Debug.Logging", "LogDialogue", true, "For developpement purposes");
-        legacyLogDialogueConfig = Config.Bind("Debug.Logging", "LegacyLogDialogue", true, "For developpement purposes");
-        logLuaShortcutsConfig = Config.Bind("Debug.Logging", "LogLuaShortcuts", true, "For developpement purposes");
-        logLuaConditionsInterceptedConfig = Config.Bind("Debug.Logging", "LogLuaConditionsIntercepted", true, "For developpement purposes");
-        logLuaCommmandsInterceptedConfig = Config.Bind("Debug.Logging", "LogLuaCommandsIntercepted", true, "For developpement purposes");
+        logSceneLoadedConfig = Config.Bind("Debug.Logging", "LogScenesLoaded", false, "For developpement purposes");
+        logWarpConfig = Config.Bind("Debug.Logging", "LogWarp", false, "For developpement purposes");
+        logDialogueConfig = Config.Bind("Debug.Logging", "LogDialogue", false, "For developpement purposes");
+        legacyLogDialogueConfig = Config.Bind("Debug.Logging", "LegacyLogDialogue", false, "For developpement purposes");
+        logLuaShortcutsConfig = Config.Bind("Debug.Logging", "LogLuaShortcuts", false, "For developpement purposes");
+        logLuaConditionsInterceptedConfig = Config.Bind("Debug.Logging", "LogLuaConditionsIntercepted", false, "For developpement purposes");
+        logLuaCommmandsInterceptedConfig = Config.Bind("Debug.Logging", "LogLuaCommandsIntercepted", false, "For developpement purposes");
 
-        enableCheatsConfig = Config.Bind("Debug.Cheat", "Enable", true, "Enable cheats (For debugging right ?)");
-        fullStatsConfig = Config.Bind("Debug.Cheat", "FullStats", true, "All Stats at maximum for fast fights");
-        ohkoConfig = Config.Bind("Debug.Cheat", "OHKO", true, "Every damage is a One Hit KO (Ennemies included I'm too lazy this is for debugging)");
+        enableCheatsConfig = Config.Bind("Debug.Cheat", "Enable", false, "Enable cheats (For debugging right ?)");
+        fullStatsConfig = Config.Bind("Debug.Cheat", "FullStats", false, "All Stats at maximum for fast fights");
+        ohkoConfig = Config.Bind("Debug.Cheat", "OHKO", false, "Every damage is a One Hit KO (Ennemies included I'm too lazy this is for debugging)");
 
         serverAdressConfig = Config.Bind("Archipelago.Login", "Adress", "archipelago.gg", "The adress of your Archipelago instance");
         serverPortConfig = Config.Bind("Archipelago.Login", "Port", 38281, "The port of your Archipelago instance");
