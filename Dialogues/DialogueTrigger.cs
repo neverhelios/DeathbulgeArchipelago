@@ -131,7 +131,7 @@ public class DialogueCatcher : MonoBehaviour
                 return false;
             }
 
-            // ADD CHOICE THERE 630|5
+            // ADD CHOICE THERE 632|5
             if (entry.conversationID == 632 && entry.id == 5)
             {
                 Plugin.Logger.LogInfo($"____________________ ADD ESCAPE CHOICE TO LOSER COUCH ____________________");
