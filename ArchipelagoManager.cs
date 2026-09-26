@@ -68,6 +68,7 @@ class ArchipelagoManager : MonoBehaviour
                 errorMessage += $"\n    {error}";
             }
             Plugin.Logger.LogError(errorMessage);
+            return;
         }
         logInfos = (LoginSuccessful)result;
         player = logInfos.Slot;
@@ -135,7 +136,6 @@ class ArchipelagoManager : MonoBehaviour
                 locationData.playerName = scoutedItem.Player.Name;
                 locationData.player = scoutedItem.Player;
                 locationData.itemFlags = scoutedItem.Flags;
-                locationData.id = location;
             }
             locations.Add(currSession.Locations.GetLocationNameFromId(location, "Deathbulge"), locationData);
         }
