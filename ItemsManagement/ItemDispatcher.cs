@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Threading.Tasks;
 using Archipelago.MultiClient.Net.Models;
 using Core;
@@ -11,7 +11,7 @@ namespace DeathbulgeArchipelagoClient.ItemsManagement;
 class ItemDispatcher
 {
     public static bool bIsFieldLoaded { get; private set; } = false;
-    private static readonly Queue<ItemInfo> itemsToDispatch = new();
+    private static readonly ConcurrentQueue<ItemInfo> itemsToDispatch = new();
 
     public static long player;
 
@@ -51,10 +51,10 @@ class ItemDispatcher
             while (itemsToDispatch.Count > 0)
             {
                 TreasureUI treasureUI = CommonObjects.GetTreasureUI();
+                ItemInfo? itemReceived = null;
 
-                if (!treasureUI.window.activeInHierarchy)
+                if (!treasureUI.window.activeInHierarchy && itemsToDispatch.TryDequeue(out itemReceived))
                 {
-                    ItemInfo itemReceived = itemsToDispatch.Dequeue();
                     // TODO: Special treatement for external money
                     Item item = DialogueManager.MasterDatabase.GetItem(Items.GetTreasureFromItemName(itemReceived.ItemName));
                     Item slot = DialogueManager.MasterDatabase.GetSlot(item, "TreasureSlot");
