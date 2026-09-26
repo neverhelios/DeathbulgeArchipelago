@@ -111,25 +111,22 @@ class ArchipelagoManager : MonoBehaviour
 
             ScoutedItemInfo scoutedItem = scoutedLocations[location];
 
-            LocationData locationData = new LocationData();
-            if (scoutedItem == null || String.IsNullOrEmpty(scoutedItem.ItemName))
+            LocationData locationData = new(){id = location};
+            if (scoutedItem == null)
             {
-                locationData.player = 0;
-                locationData.playerName = "No one";
-                locationData.itemFlags = ItemFlags.None;
-                locationData.itemId = 0;
-                if (String.IsNullOrEmpty(scoutedItem.ItemName))
-                {
-                    Debug.LogError($"Player:{scoutedItem.Player.Name} Game:{scoutedItem.Player.Game}, ItemId:{scoutedItem.ItemId}");
-                    locationData.player = scoutedItem.Player;
-                    locationData.playerName = scoutedItem.Player.Name;
-                    locationData.itemFlags = scoutedItem.Flags;
-                    locationData.itemId = scoutedItem.ItemId;
-                }
-                else
-                    Debug.LogError($"There is no Data for this Location {location}");
-                locationData.id = location;
                 locationData.itemName = "No item name";
+                locationData.itemId = 0;
+                locationData.playerName = "No one";
+                locationData.player = 0;
+                locationData.itemFlags = ItemFlags.None;
+            }else if(String.IsNullOrEmpty(scoutedItem.ItemName))
+            {
+                Debug.LogError($"Player:{scoutedItem.Player.Name} Game:{scoutedItem.Player.Game}, ItemId:{scoutedItem.ItemId}");
+                locationData.itemName = "No item name";
+                locationData.itemId = scoutedItem.ItemId;
+                locationData.playerName = scoutedItem.Player.Name;
+                locationData.player = scoutedItem.Player;
+                locationData.itemFlags = scoutedItem.Flags;
             }
             else
             {
