@@ -14,12 +14,12 @@ class ArchipelagoManager : MonoBehaviour
 {
     public static ArchipelagoManager instance = null;
 
-    public ArchipelagoSession currSession = null;
+    public ArchipelagoSession? currSession = null;
     public LoginSuccessful logInfos;
 
     private long player;
 
-    private class LocationData
+    public class LocationData
     {
         public string itemName { get; set; }
         public long itemId { get; set; }
@@ -27,6 +27,7 @@ class ArchipelagoManager : MonoBehaviour
         public string playerName { get; set; }
         public ItemFlags itemFlags { get; set; }
         public long id { get; set; }
+        public bool bIsLocal { get; set; }
     }
 
     private Dictionary<string, LocationData> locations = new();
@@ -77,24 +78,13 @@ class ArchipelagoManager : MonoBehaviour
         GetOwnLocationData().Wait();
     }
 
-    public bool IsLocalLocation(string location)
+    public bool TryGetLocation(string locationString, out LocationData location)
     {
-        return locations[location].player == player;
-    }
+        if( locations.TryGetValue(locationString, out location))
+        return true;
 
-    public string GetLocationItem(string location)
-    {
-        return locations[location].itemName;
-    }
-
-    public string GetPlayerName(string location)
-    {
-        return locations[location].playerName;
-    }
-
-    public ItemFlags GetItemFlags(string location)
-    {
-        return locations[location].itemFlags;
+        Plugin.Logger.LogWarning($"Location '{locationString}' unknown, it's either a bug or you're playing offline");
+        return false;
     }
 
     public async Task GetOwnLocationData()
@@ -120,6 +110,7 @@ class ArchipelagoManager : MonoBehaviour
                 locationData.playerName = "No one";
                 locationData.player = 0;
                 locationData.itemFlags = ItemFlags.None;
+                locationData.bIsLocal = false;
             }else if(String.IsNullOrEmpty(scoutedItem.ItemName))
             {
                 Debug.LogError($"Player:{scoutedItem.Player.Name} Game:{scoutedItem.Player.Game}, ItemId:{scoutedItem.ItemId}");
@@ -128,6 +119,7 @@ class ArchipelagoManager : MonoBehaviour
                 locationData.playerName = scoutedItem.Player.Name;
                 locationData.player = scoutedItem.Player;
                 locationData.itemFlags = scoutedItem.Flags;
+                locationData.bIsLocal = locationData.player == player;
             }
             else
             {
@@ -136,6 +128,7 @@ class ArchipelagoManager : MonoBehaviour
                 locationData.playerName = scoutedItem.Player.Name;
                 locationData.player = scoutedItem.Player;
                 locationData.itemFlags = scoutedItem.Flags;
+                locationData.bIsLocal = locationData.player == player;
             }
             locations.Add(currSession.Locations.GetLocationNameFromId(location, "Deathbulge"), locationData);
         }

@@ -95,18 +95,24 @@ class TreasureManager
                 continue;
 
             Items.SendCheckAndGetItem(locationString, true);
-            string itemName = ArchipelagoManager.instance.GetLocationItem(locationString);
 
-            Plugin.Logger.LogInfo($"\n\n\n+++++++++++++++ The beat drop name is {beatName}, so treasure {locationString} and will be replaced by {itemName} ++++++++++++++++++++\n\n\n");
-            if (ArchipelagoManager.instance.IsLocalLocation(locationString))
+            if(ArchipelagoManager.instance.TryGetLocation(locationString, out var location))
             {
-                beats[i] = DialogueManager.MasterDatabase.GetItem(itemName);
+                Plugin.Logger.LogInfo($"\n\n\n+++++++++++++++ The beat drop name is {beatName}, so treasure {locationString} and will be replaced by {location.itemName} ++++++++++++++++++++\n\n\n");
+                if (location.bIsLocal)
+                {
+                    beats[i] = DialogueManager.MasterDatabase.GetItem(location.itemName);
+                }
+                else
+                {
+                    // Replace item bc it's archipelago remote
+                    remoteArchipelagoLocations.Add(locationString);
+                    beats.RemoveAt(i);
+                }
             }
             else
             {
-                // Replace item bc it's archipelago remote
-                remoteArchipelagoLocations.Add(locationString);
-                beats.RemoveAt(i);
+                Plugin.Logger.LogError($"Location {locationString} not found, vanilla beat has been kept");
             }
         }
 
@@ -135,7 +141,7 @@ class TreasureManager
             var main = AccessTools.Field(typeof(VictoryWindow), "main").GetValue(__instance);
             var mainMono = (MonoBehaviour)main;
             yield return mainMono.StartCoroutine(OriginalBeatDropPopupsAsync(__instance, beats));
-            Plugin.Logger.LogInfo("Coroutine originale terminée");
+            Plugin.Logger.LogInfo("Original Coroutine finished");
         }
     }
 
@@ -155,6 +161,12 @@ class TreasureManager
         if (locationString.Contains("Archipelago Item - "))
         {
             locationString = locationString.Replace("Archipelago Item - ", "");
+            ShowArchipelagoItemPopup(locationString);
+            stopMethodInfo.Invoke(__instance, []);
+            return false;
+        }
+        else if (locationString.Contains("ERROR - "))
+        {
             ShowArchipelagoItemPopup(locationString);
             stopMethodInfo.Invoke(__instance, []);
             return false;
@@ -208,31 +220,37 @@ class TreasureManager
 
     private static void ShowArchipelagoItemPopup(string locationString)
     {
-        ItemFlags itemFlags = ArchipelagoManager.instance.GetItemFlags(locationString);
+        if(ArchipelagoManager.instance.TryGetLocation(locationString, out var location))
+        {
+            string itemTypeString;
+            Sprite itemSprite = ResourcesLoader.GetSprite("archipelago.png");
+            if ((location.itemFlags & ItemFlags.Advancement) != 0)
+            {
+                itemTypeString = "Progression";
+                itemSprite = ResourcesLoader.GetSprite("archipelago_arrow_up.png");
+            }
+            else if ((location.itemFlags & ItemFlags.Trap) != 0)
+            {
+                itemTypeString = "Trap";
+            }
+            else if (location.itemFlags == 0)
+            {
+                itemTypeString = "Filler";
+                itemSprite = ResourcesLoader.GetSprite("archipelago_grayscale.png");
+            }
+            else
+            {
+                itemTypeString = "Useful";
+            }
 
-        string itemTypeString;
-        Sprite itemSprite = ResourcesLoader.GetSprite("archipelago.png");
-        if ((itemFlags & ItemFlags.Advancement) != 0)
-        {
-            itemTypeString = "Progression";
-            itemSprite = ResourcesLoader.GetSprite("archipelago_arrow_up.png");
-        }
-        else if ((itemFlags & ItemFlags.Trap) != 0)
-        {
-            itemTypeString = "Trap";
-        }
-        else if (itemFlags == 0)
-        {
-            itemTypeString = "Filler";
-            itemSprite = ResourcesLoader.GetSprite("archipelago_grayscale.png");
+            ShowTreasurePopup(location.itemName, "Archipelago Item",
+                            itemTypeString, $"A {itemTypeString} item for {location.playerName}", "", false, itemSprite);
         }
         else
         {
-            itemTypeString = "Useful";
+            ShowTreasurePopup(locationString, "Error",
+                            "Error", $"{locationString} is not a valid location, check your connection\nto archipelago or report this as an issue", "", false, ResourcesLoader.GetSprite("archipelago_grayscale.png"));
         }
-
-        ShowTreasurePopup(ArchipelagoManager.instance.GetLocationItem(locationString), "Archipelago Item",
-                          itemTypeString, $"A {itemTypeString} item for {ArchipelagoManager.instance.GetPlayerName(locationString)}", "", false, itemSprite);
     }
 
     public static void ShowTreasurePopup(string name, string title, string subtitle, string description, string charMod, bool activateCharMod, string treasureSprite)

@@ -58,17 +58,23 @@ class LuaCatcher
 
                     locations.CompleteLocationChecks(locations.GetLocationIdFromName("Deathbulge", locationString));
 
-                    if (ArchipelagoManager.instance.IsLocalLocation(locationString))
+                    if (ArchipelagoManager.instance.TryGetLocation(locationString, out var location))
                     {
-                        string itemName = ArchipelagoManager.instance.GetLocationItem(locationString);
-                        string treasureName = Items.GetTreasureFromItemName(itemName);
-                        Plugin.Logger.LogInfo($"======= The treasure get will should be {locationString} but it will be {treasureName}");
-                        lines[i] = $"Variable[\"Treasure.CurrentFlag\"] = \"{treasureName}\"";
-                    }
-                    else
+                        if(location.bIsLocal)
+                        {
+                            string treasureName = Items.GetTreasureFromItemName(location.itemName);
+                            Plugin.Logger.LogInfo($"======= The treasure get will should be {locationString} but it will be {treasureName}");
+                            lines[i] = $"Variable[\"Treasure.CurrentFlag\"] = \"{treasureName}\"";
+                        }
+                        else
+                        {
+                            lines[i] = $"Variable[\"Treasure.CurrentFlag\"] = \"Archipelago Item - {locationString}\"";
+                            Plugin.Logger.LogInfo($"On va t'archipelaguer à coup de Archipelago Item - {locationString}");
+                        }
+                    } else
                     {
-                        lines[i] = $"Variable[\"Treasure.CurrentFlag\"] = \"Archipelago Item - {locationString}\"";
-                        Plugin.Logger.LogInfo($"On va t'archipelaguer à coup de Archipelago Item - {locationString}");
+                        Plugin.Logger.LogError($"Location {locationString} not found, vanilla item has been kept");
+                        continue;
                     }
                 }
             }
