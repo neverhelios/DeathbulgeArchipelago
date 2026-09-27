@@ -51,14 +51,7 @@ class LuaCatcher
                 {
                     string locationString = lines[i].Split('"')[3];
 
-                    if (ArchipelagoManager.instance.TryGetLocation(locationString, out var location))
-                    {
-                        lines[i] = $"Variable[\"Treasure.CurrentFlag\"] = \"{Items.SendCheckAndGetItem(locationString)}\"";
-                    } else
-                    {
-                        Plugin.Logger.LogError($"Location {locationString} not found, vanilla item has been kept");
-                        continue;
-                    }
+                    lines[i] = $"Variable[\"Treasure.CurrentFlag\"] = \"{Items.SendCheckAndGetItem(locationString)}\"";
                 }
             }
             luaCode = string.Join('\n', lines);
