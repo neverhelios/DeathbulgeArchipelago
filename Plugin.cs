@@ -13,23 +13,23 @@ namespace DeathbulgeArchipelagoClient;
 [BepInPlugin(MyPluginInfo.PLUGIN_GUID, MyPluginInfo.PLUGIN_NAME, MyPluginInfo.PLUGIN_VERSION)]
 public class Plugin : BaseUnityPlugin
 {
-    internal static new ManualLogSource Logger;
-    private static ConfigEntry<bool> logSceneLoadedConfig;
-    internal static ConfigEntry<bool> logWarpConfig;
-    internal static ConfigEntry<bool> logDialogueConfig;
-    private static ConfigEntry<bool> legacyLogDialogueConfig;
-    private static ConfigEntry<bool> logLuaShortcutsConfig;
-    internal static ConfigEntry<bool> logLuaConditionsInterceptedConfig;
-    internal static ConfigEntry<bool> logLuaCommmandsInterceptedConfig;
+    internal static new ManualLogSource Logger = null!;
+    private static ConfigEntry<bool> logSceneLoadedConfig = null!;
+    internal static ConfigEntry<bool> logWarpConfig = null!;
+    internal static ConfigEntry<bool> logDialogueConfig = null!;
+    private static ConfigEntry<bool> legacyLogDialogueConfig = null!;
+    private static ConfigEntry<bool> logLuaShortcutsConfig = null!;
+    internal static ConfigEntry<bool> logLuaConditionsInterceptedConfig = null!;
+    internal static ConfigEntry<bool> logLuaCommmandsInterceptedConfig = null!;
 
-    private static ConfigEntry<bool> enableCheatsConfig;
-    internal static ConfigEntry<bool> fullStatsConfig;
-    internal static ConfigEntry<bool> ohkoConfig;
+    private static ConfigEntry<bool> enableCheatsConfig = null!;
+    internal static ConfigEntry<bool> fullStatsConfig = null!;
+    internal static ConfigEntry<bool> ohkoConfig = null!;
 
-    private static ConfigEntry<string> serverAdressConfig;
-    private static ConfigEntry<int> serverPortConfig;
-    private static ConfigEntry<string> slotNameConfig;
-    private static ConfigEntry<string> slotPasswordConfig;
+    private static ConfigEntry<string> serverAdressConfig = null!;
+    private static ConfigEntry<int> serverPortConfig = null!;
+    private static ConfigEntry<string> slotNameConfig = null!;
+    private static ConfigEntry<string> slotPasswordConfig = null!;
 
 
     private void Awake()

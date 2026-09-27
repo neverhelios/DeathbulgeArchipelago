@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
+using Archipelago.MultiClient.Net;
 using Archipelago.MultiClient.Net.Enums;
 using Archipelago.MultiClient.Net.Helpers;
 using Combat.UI;
@@ -28,8 +29,7 @@ class TreasureManager
         if (variable == "Treasure.CurrentFlag")
         {
             Lua.WasInvoked = true;
-            LuaTable luaTable = Lua.Environment.GetValue("Variable") as LuaTable;
-            if (luaTable == null)
+            if (Lua.Environment.GetValue("Variable") is not LuaTable luaTable)
             {
                 return false;
             }
@@ -55,8 +55,10 @@ class TreasureManager
         if (locationString == "NO LOCATION")
             return true;
 
-        ILocationCheckHelper locations = ArchipelagoManager.instance.currSession?.Locations;
-        if (locations == null) return true;
+        ArchipelagoSession? currSession = ArchipelagoManager.instance.currSession;
+        if (currSession == null) return true;
+
+        ILocationCheckHelper locations = currSession.Locations;
 
         long locationId = locations.GetLocationIdFromName("Deathbulge", locationString);
         __result = locations.AllLocationsChecked.Contains(locationId);
@@ -71,17 +73,12 @@ class TreasureManager
     static IEnumerator OriginalBeatDropPopupsAsync(object instance, List<Item> beats)
         => throw new NotImplementedException();
 
-    static bool _skipPatch = false;
-
     // Send checks for beats
     [HarmonyPatch(typeof(VictoryWindow))]
     [HarmonyPatch("BeatDropPopupsAsync", [typeof(List<Item>)])]
     [HarmonyPrefix]
     static bool Prefix_VictoryWindow_BeatDropPopupsAsync_SendTreasureCheck(VictoryWindow __instance, ref IEnumerator __result, List<Item> beats)
     {
-        // Using HarmonyReversePatch had issues
-        if (_skipPatch) return true;
-
         var remoteArchipelagoLocations = new List<string>();
 
         // Replace directly the item values
@@ -123,16 +120,10 @@ class TreasureManager
         IEnumerator ShowRemoteArchipelagoTreasures(List<string> remoteArchipelagoLocations, List<Item> beats)
         {
             TreasureUI uiTrea = CommonObjects.GetTreasureUI();
-            Func<bool> waitWindowCache = null;
             foreach (string locationString in remoteArchipelagoLocations)
             {
                 ShowArchipelagoItemPopup(locationString);
-                Func<bool> func;
-                if ((func = waitWindowCache) == null)
-                {
-                    func = (waitWindowCache = () => !uiTrea.window.activeInHierarchy);
-                }
-                yield return new WaitUntil(func);
+                yield return new WaitUntil(() => !uiTrea.window.activeInHierarchy);
             }
 
             Plugin.Logger.LogInfo($"Instance is {__instance} and beats are {beats}");

@@ -3,6 +3,7 @@ using Core;
 using HarmonyLib;
 using PixelCrushers.DialogueSystem;
 using DeathbulgeArchipelagoClient.ItemsManagement;
+using Archipelago.MultiClient.Net;
 
 namespace DeathbulgeArchipelagoClient;
 
@@ -76,9 +77,11 @@ class LuaCatcher
 
                     string locationString = Items.GetTreasureFromItemName(itemName);
 
-                    ILocationCheckHelper locations = ArchipelagoManager.instance.currSession?.Locations;
-                    if (locations == null) return match.Value;
+                    ArchipelagoSession? currSession = ArchipelagoManager.instance.currSession;
 
+                    if (currSession == null) return match.Value;
+
+                    ILocationCheckHelper locations = currSession.Locations;
                     long locationId = locations.GetLocationIdFromName("Deathbulge", locationString);
 
                     bool isMissing = locations.AllMissingLocations.Contains(locationId);

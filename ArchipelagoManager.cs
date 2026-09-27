@@ -12,19 +12,19 @@ namespace DeathbulgeArchipelagoClient;
 
 class ArchipelagoManager : MonoBehaviour
 {
-    public static ArchipelagoManager instance = null;
+    public static ArchipelagoManager instance = null!;
 
     public ArchipelagoSession? currSession = null;
-    public LoginSuccessful logInfos;
+    public LoginSuccessful logInfos = null!;
 
     private long player;
 
     public class LocationData
     {
-        public string itemName { get; set; }
+        public string itemName { get; set; } = "";
         public long itemId { get; set; }
         public long player { get; set; }
-        public string playerName { get; set; }
+        public string playerName { get; set; } = "";
         public ItemFlags itemFlags { get; set; }
         public long id { get; set; }
         public bool bIsLocal { get; set; }
@@ -90,6 +90,10 @@ class ArchipelagoManager : MonoBehaviour
     public async Task GetOwnLocationData()
     {
         locations.Clear();
+
+        if(currSession == null)
+            return;
+
         long[] allLocations = currSession.Locations.AllLocations.ToArray();
         Dictionary<long, ScoutedItemInfo> scoutedLocations = currSession.Locations.ScoutLocationsAsync(allLocations).Result;
         foreach (long location in allLocations)

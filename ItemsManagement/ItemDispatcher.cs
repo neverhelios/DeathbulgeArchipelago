@@ -1,5 +1,6 @@
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
+using Archipelago.MultiClient.Net;
 using Archipelago.MultiClient.Net.Models;
 using Core;
 using Field;
@@ -36,7 +37,15 @@ class ItemDispatcher
         {
             bIsFieldLoaded = false;
 
-            foreach (ItemInfo itemInfo in ArchipelagoManager.instance.currSession?.Items?.AllItemsReceived)
+            ArchipelagoSession? currSession = ArchipelagoManager.instance.currSession;
+
+            if(currSession == null)
+            {
+                Plugin.Logger.LogWarning($"Curr session is null so the items will not be redispatched");
+                return;
+            }
+
+            foreach (ItemInfo itemInfo in currSession.Items.AllItemsReceived)
             {
                 // TODO: Avoid my items
                 AddDispatchedItem(itemInfo);
