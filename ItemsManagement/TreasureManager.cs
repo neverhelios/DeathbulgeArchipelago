@@ -165,7 +165,7 @@ class TreasureManager
             stopMethodInfo.Invoke(__instance, []);
             return false;
         }
-        else if (locationString.Contains("ERROR - "))
+        else if (locationString.Contains("Archipelago ERROR - "))
         {
             ShowArchipelagoItemPopup(locationString);
             stopMethodInfo.Invoke(__instance, []);
@@ -187,12 +187,22 @@ class TreasureManager
 
         Plugin.Logger.LogInfo($"Set variable awake: {parameter} {parameter2} {articyField}");
 
-        bool bIsArchipelagoItem = parameter2.Contains("Archipelago Item - ");
-
-        if (bIsArchipelagoItem && parameter == "Treasure.Audio")
+        bool bIsArchipelagoParam = parameter2.Contains("Archipelago");
+        if(bIsArchipelagoParam)
         {
+            // In case of Error, we just don't set variables
+            if(parameter2.Contains("Archipelago ERROR - "))
+            {
+                stopSVMethodInfo.Invoke(__instance, []);
+                return false;
+            }
 
-            parameter2 = parameter2.Replace("Archipelago Item - ", "");
+            // TODO: Explain WTF I was doing here ????
+            bool bIsArchipelagoItem = parameter2.Contains("Archipelago Item - ");
+            if (bIsArchipelagoItem && parameter == "Treasure.Audio")
+            {
+                parameter2 = parameter2.Replace("Archipelago Item - ", "");
+            }
         }
 
         Item item = DialogueManager.MasterDatabase.GetItem(parameter2);

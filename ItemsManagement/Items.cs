@@ -230,7 +230,7 @@ class Items
         } else
         {
             Plugin.Logger.LogError($"WRONG LOCATION - {locationString}");
-            return $"ERROR - Location `{locationString}` not found";
+            return $"Archipelago ERROR - Location `{locationString}` not found";
         }
     }
 
