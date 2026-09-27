@@ -6,6 +6,7 @@ using HarmonyLib;
 using Field;
 using PixelCrushers.DialogueSystem;
 using Core;
+using Archipelago.MultiClient.Net;
 
 namespace DeathbulgeArchipelagoClient.ItemsManagement;
 
@@ -209,7 +210,20 @@ class Items
 
     public static string SendCheckAndGetItem(string locationString, bool only_check = false)
     {
-        ArchipelagoManager.instance.currSession?.Locations?.CompleteLocationChecks(ArchipelagoManager.instance.currSession?.Locations?.GetLocationIdFromName("Deathbulge", locationString) ?? -1);
+        ArchipelagoSession? currSession = ArchipelagoManager.instance.currSession;
+
+        if(currSession == null)
+        {
+            Plugin.Logger.LogError($"Tried sending check but archipelago not connected");
+            return "Archipelago ERROR - No current session";
+        }
+
+        long locationId = currSession.Locations.GetLocationIdFromName("Deathbulge", locationString);
+
+        if(locationId == -1)
+            return "Archipelago ERROR - Wrong location ID";
+
+        currSession.Locations.CompleteLocationChecks(locationId);
 
         if (only_check)
             return "";
